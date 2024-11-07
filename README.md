@@ -58,6 +58,6 @@ Start applikasjonen:
 Applikasjonen vil være tilgjengelig på http://localhost:3000.
 
 # Innsending
-Kode: Last opp koden din til et offentlig GitHub-repo og send oss lenken.
+Kode: Last opp koden din til et privat GitHub-repo og send oss lenken.
 Dokumentasjon: Legg ved en kort beskrivelse av hvordan du har løst oppgaven, inkludert valg av teknologi og eventuelle utfordringer du støtte på.
 Vi ser frem til å se din løsning! Lykke til!
