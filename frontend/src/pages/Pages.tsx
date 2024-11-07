@@ -1,6 +1,6 @@
 import Home from './Home'
 
-const Pages = () => {
+const Pages: React.FC = (): React.ReactNode => {
   return (
     <div>
       <Home />

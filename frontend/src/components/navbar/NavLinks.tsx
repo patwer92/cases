@@ -1,4 +1,4 @@
-const NavLinks = () => {
+const NavLinks: React.FC = (): React.ReactNode => {
   return (
     <div className='flex justify-center items-center cursor-pointer'>
       <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500'>
@@ -8,7 +8,7 @@ const NavLinks = () => {
           viewBox='0 0 24 24'
           strokeWidth='1.5'
           stroke='currentColor'
-          className='size-6'
+          className='size-6 mx-4'
         >
           <path
             strokeLinecap='round'
@@ -24,7 +24,7 @@ const NavLinks = () => {
           viewBox='0 0 24 24'
           strokeWidth='1.5'
           stroke='currentColor'
-          className='size-6'
+          className='size-6 mx-4'
         >
           <path
             strokeLinecap='round'
@@ -40,7 +40,7 @@ const NavLinks = () => {
           viewBox='0 0 24 24'
           strokeWidth='1.5'
           stroke='currentColor'
-          className='size-6'
+          className='size-6 mx-4'
         >
           <path
             strokeLinecap='round'
@@ -56,7 +56,7 @@ const NavLinks = () => {
           viewBox='0 0 24 24'
           strokeWidth='1.5'
           stroke='currentColor'
-          className='size-6'
+          className='size-6 mx-4'
         >
           <path
             strokeLinecap='round'
