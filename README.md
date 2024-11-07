@@ -41,8 +41,7 @@ f. Avanserte tilgangskontroller: Implementer tilgangskontroller i backend slik a
 
 # Oppsett og Kjøring av Applikasjonen
 Klon repoet:
-```git clone https://github.com/propely/nyhetsfeed-prosjekt.git```
-```cd nyhetsfeed-prosjekt```
+```git clone https://github.com/Propely/cases.git```
 
 Installer avhengigheter:
 ```npm install```
@@ -50,7 +49,8 @@ Installer avhengigheter:
 Legg til konfigurasjon for backend:
 
 Firebase Firestore-brukere: Konfigurer Firebase og legg til din Firebase-konfigurasjonsfil i prosjektet.
-Alternativ backend: Sett opp og konfigurer ønsket backend, og legg til konfigurasjonsdetaljer i prosjektet.
+### Alternativ backend: 
+Sett opp og konfigurer ønsket backend, og legg til konfigurasjonsdetaljer i prosjektet.
 
 Start applikasjonen:
 ```npm start```
