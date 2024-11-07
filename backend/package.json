@@ -1,0 +1,19 @@
+{
+    "name": "propely-candidate-case-backend",
+    "version": "1.0.0",
+    "description": "Newsfeed backend",
+    "main": "index.js",
+    "scripts": {
+      "test": "npm run test"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+ssh://git@github.com/Propely/cases.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+      "url": "https://github.com/Propely/cases/issues"
+    },
+    "homepage": "https://github.com/Propely/cases#readme"
+  }
