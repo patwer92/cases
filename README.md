@@ -33,30 +33,25 @@ e. Kommentarfunksjonalitet: Utvid nyhetsfeeden ved å legge til kommentarfelt un
 
 f. Avanserte tilgangskontroller: Implementer tilgangskontroller i backend slik at kun autentiserte brukere kan legge til innlegg eller kommentarer. Valider at felter som user, timestamp og eventuelle subcollections er korrekte.
 
-Oppsett og Kjøring av Applikasjonen
+# Oppsett og Kjøring av Applikasjonen
 Klon repoet:
 
-bash
-Copy code
-git clone https://github.com/propely/nyhetsfeed-prosjekt.git
-cd nyhetsfeed-prosjekt
+```git clone https://github.com/propely/nyhetsfeed-prosjekt.git```
+```cd nyhetsfeed-prosjekt```
 Installer avhengigheter:
 
-bash
-Copy code
-npm install
+
+```npm install```
 Legg til konfigurasjon for backend:
 
 Firebase Firestore-brukere: Konfigurer Firebase og legg til din Firebase-konfigurasjonsfil i prosjektet.
 Alternativ backend: Sett opp og konfigurer ønsket backend, og legg til konfigurasjonsdetaljer i prosjektet.
 Start applikasjonen:
 
-bash
-Copy code
-npm start
+```npm start```
 Applikasjonen vil være tilgjengelig på http://localhost:3000.
 
-Innsending
+# Innsending
 Kode: Last opp koden din til et offentlig GitHub-repo og send oss lenken.
 Dokumentasjon: Legg ved en kort beskrivelse av hvordan du har løst oppgaven, inkludert valg av teknologi og eventuelle utfordringer du støtte på.
 Vi ser frem til å se din løsning! Lykke til!
