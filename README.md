@@ -5,12 +5,12 @@ Velkommen til Propelys opptaksprøve for utviklere! I denne oppgaven skal du byg
 Målet med oppgaven er å bygge en enkel nyhetsfeed der brukere kan opprette innlegg. Hvert innlegg skal inneholde en tittel, innhold og et tidsstempel. I tillegg ønskes det at hver post viser brukerinformasjon, slik som brukernavn, profilbilde-URL og bruker-ID.
 
 # Teknologikrav
-Frontend: React
-Backend: Firebase Firestore eller en annen valgt backend-løsning
-Validering: Bruk gjerne Yup, React Hook Form eller lignende for input-validering
-Sanntidsoppdateringer: Bruk Firebase eller alternativ teknologi for live oppdateringer
-Hovedfunksjonalitet
-Innleggsfunksjonalitet: Lag en nyhetsfeed der brukere kan opprette innlegg med en tittel, innhold og et tidsstempel.
+## Frontend: React
+## Backend: Firebase Firestore eller en annen valgt backend-løsning
+## Validering: Bruk gjerne Yup, React Hook Form eller lignende for input-validering
+## Sanntidsoppdateringer: Bruk Firebase eller alternativ teknologi for live oppdateringer
+# Hovedfunksjonalitet
+## Innleggsfunksjonalitet: Lag en nyhetsfeed der brukere kan opprette innlegg med en tittel, innhold og et tidsstempel.
 
 ## Input-validering: 
 Bruk et valideringsbibliotek (f.eks. Yup eller React Hook Form) for å sikre at tittelen har riktig lengde, at innholdet ikke er tomt, og at tidsstempelformatet er korrekt.
