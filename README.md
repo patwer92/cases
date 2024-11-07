@@ -15,7 +15,8 @@ Bruk gjerne Yup, React Hook Form eller lignende for input-validering
 Bruk Firebase eller alternativ teknologi for live oppdateringer
 
 # Hovedfunksjonalitet
-## Innleggsfunksjonalitet: Lag en nyhetsfeed der brukere kan opprette innlegg med en tittel, innhold og et tidsstempel.
+## Innleggsfunksjonalitet: 
+Lag en nyhetsfeed der brukere kan opprette innlegg med en tittel, innhold og et tidsstempel.
 
 ## Input-validering: 
 Bruk et valideringsbibliotek (f.eks. Yup eller React Hook Form) for å sikre at tittelen har riktig lengde, at innholdet ikke er tomt, og at tidsstempelformatet er korrekt.
