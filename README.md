@@ -41,7 +41,7 @@ f. Avanserte tilgangskontroller: Implementer tilgangskontroller i backend slik a
 
 # Oppsett og Kjøring av Applikasjonen
 Klon repoet:
-```git clone https://github.com/propely/cases.git```
+```git clone https://github.com/Propely/cases.git```
 
 Installer avhengigheter:
 ```npm install```
