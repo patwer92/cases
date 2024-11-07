@@ -11,7 +11,7 @@ const UserLinks: React.FC = (): React.ReactElement => {
           viewBox='0 0 24 24'
           strokeWidth='1.5'
           stroke='currentColor'
-          className='size-6 mx-3'
+          className='size-7 mx-3'
         >
           <path
             strokeLinecap='round'
@@ -27,7 +27,7 @@ const UserLinks: React.FC = (): React.ReactElement => {
           viewBox='0 0 24 24'
           strokeWidth='1.5'
           stroke='currentColor'
-          className='size-5 mx-3'
+          className='size-6 mx-3'
         >
           <path
             strokeLinecap='round'
