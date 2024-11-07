@@ -49,7 +49,8 @@ Installer avhengigheter:
 Legg til konfigurasjon for backend:
 
 Firebase Firestore-brukere: Konfigurer Firebase og legg til din Firebase-konfigurasjonsfil i prosjektet.
-Alternativ backend: Sett opp og konfigurer ønsket backend, og legg til konfigurasjonsdetaljer i prosjektet.
+### Alternativ backend: 
+Sett opp og konfigurer ønsket backend, og legg til konfigurasjonsdetaljer i prosjektet.
 
 Start applikasjonen:
 ```npm start```
