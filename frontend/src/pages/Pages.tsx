@@ -3,6 +3,7 @@ import Home from './Home'
 import { Routes, Route } from 'react-router-dom'
 import Login from './Login'
 import Register from './Register'
+import Reset from './Reset'
 
 const Pages: React.FC = (): React.ReactElement => {
   return (
@@ -19,6 +20,10 @@ const Pages: React.FC = (): React.ReactElement => {
         <Route
           path='/register'
           element={<Register />}
+        />
+        <Route
+          path='/reset'
+          element={<Reset />}
         />
       </Routes>
     </div>

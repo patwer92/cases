@@ -54,7 +54,7 @@ const UserLinks: React.FC = (): React.ReactElement => {
       </div>
       <div className='mx-4 flex items-center'>
         <Tooltip
-          content='Sign Out'
+          content='Logg ut'
           placement='bottom'
         >
           <Avatar
@@ -65,7 +65,7 @@ const UserLinks: React.FC = (): React.ReactElement => {
           />
         </Tooltip>
         <p className='ml-4 font-roboto text-sm text-black font-medium no-underline'>
-          User
+          Brukerkonto
         </p>
       </div>
     </div>

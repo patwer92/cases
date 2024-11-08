@@ -25,9 +25,9 @@ const Card: React.FC<CardProps> = ({
         </p>
         <p
           className={`${
-            status === 'Offline'
-              ? 'absolute bottom-4 right-4 text-sm font-medium text-red-500 font-roboto no-underline leading-none'
-              : 'absolute bottom-4 right-4 text-sm font-medium text-green-500 font-roboto no-underline leading-none'
+            status === 'Avlogget'
+              ? 'absolute bottom-4 right-4 text-sm font-medium text-red-600 font-roboto no-underline leading-none'
+              : 'absolute bottom-4 right-4 text-sm font-medium text-green-400 font-roboto no-underline leading-none'
           }`}
         >
           {status}

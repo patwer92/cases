@@ -89,25 +89,19 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
           >
             <Avatar
               src='https://docs.material-tailwind.com/img/face-2.jpg'
-              size='md'
+              size='xxl'
               alt='avatar'
               {...({} as React.ComponentProps<typeof Avatar>)}
             />
           </Tooltip>
         </div>
       </div>
-      <div className='flex flex-col items-center pt-6'>
+      <div className='flex flex-col items-center pt-8'>
         <p className='font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none'>
-          User email
-        </p>
-        <p className='font-roboto font-medium text-xs text-gray-700 no-underline tracking-normal leading-none'>
-          Access exclusive tools & insights
-        </p>
-        <p className='font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none py-2'>
-          Try premium for free
+          Brukerkonto
         </p>
       </div>
-      <div className='flex flex-col pl-2'>
+      <div className='flex flex-col pl-2 mt-10'>
         <div className='flex items-center pb-4'>
           <img
             className='h-10'
@@ -115,7 +109,7 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             alt='location'
           />
           <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none'>
-            California
+            Drøbak, Norway
           </p>
         </div>
         <div className='flex items-center'>
@@ -125,27 +119,27 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             alt='job'
           />
           <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none'>
-            React Developer
+            React Utvikler
           </p>
         </div>
-        <div className='flex justify-center items-center pt-4'>
+        <div className='flex justify-center items-center pt-10'>
           <p className='font-roboto font-bold text-md text-[#0177b7] no-underline tracking-normal leading-none'>
-            Events
+            Eventer
           </p>
           <p className='font-roboto font-bold text-md text-[#0177b7] no-underline tracking-normal leading-none mx-2'>
-            Groups
+            Grupper
           </p>
           <p className='font-roboto font-bold text-md text-[#0177b7] no-underline tracking-normal leading-none'>
-            Follow
+            Følg
           </p>
           <p className='font-roboto font-bold text-md text-[#0177b7] no-underline tracking-normal leading-none mx-2'>
-            More
+            Mer
           </p>
         </div>
       </div>
-      <div className='ml-4'>
+      <div className='ml-4 mt-10'>
         <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none py-2'>
-          Social Profiles
+          Sosiale Nettverk
         </p>
         <div className='flex items-center'>
           <img
@@ -154,7 +148,7 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             alt='facebook'
           />
           <p className='font-roboto font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r to-red-700 from-blue-500 no-underline tracking-normal leading-none py-2'>
-            Social Network
+            Facebook
           </p>
         </div>
         <div className='flex items-center'>
@@ -164,13 +158,13 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             alt='twitter'
           />
           <p className='font-roboto font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r to-red-700 from-blue-500 no-underline tracking-normal leading-none py-2'>
-            Social Network
+            Twitter
           </p>
         </div>
       </div>
-      <div className='flex flex-col justify-center items-center pt-4'>
-        <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none py-2'>
-          Random Ads
+      <div className='flex flex-col justify-center items-center pt-10'>
+        <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none py-4'>
+          Google Ads
         </p>
         <div
           style={{ width: `${progressBar()}%` }}
@@ -178,7 +172,7 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
         ></div>
         {data && (
           <img
-            className='h-36 rounded-lg'
+            className='h-36 rounded-lg cursor-pointer'
             src={data.image}
             alt='ads'
           />

@@ -23,7 +23,7 @@ const Main: React.FC = (): React.ReactElement => {
                   className='outline-none w-full bg-white rounded-md'
                   name='text'
                   type='text'
-                  placeholder="What's on your mind, user?"
+                  placeholder='Hva tenker du på, Brukerkonto?'
                 />
               </div>
               <div className='mx-4 '>{/* put preview image here */}</div>
@@ -35,7 +35,7 @@ const Main: React.FC = (): React.ReactElement => {
                   className='w-full'
                   {...({} as React.ComponentProps<typeof Button>)}
                 >
-                  Share
+                  Del
                 </Button>
               </div>
             </div>
@@ -50,7 +50,7 @@ const Main: React.FC = (): React.ReactElement => {
             >
               <img
                 src={addImage}
-                alt='Add an image'
+                alt='Legg til bilde'
               />
               <input
                 id='addImage'
@@ -68,7 +68,7 @@ const Main: React.FC = (): React.ReactElement => {
               alt='live'
             />
             <p className='font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none'>
-              Live
+              Gå Live
             </p>
           </div>
           <div className='flex items-center'>
@@ -78,13 +78,13 @@ const Main: React.FC = (): React.ReactElement => {
               alt='feeling'
             />
             <p className='font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none'>
-              Feeling
+              Følelse
             </p>
           </div>
         </div>
       </div>
-      <div className='flex flex-col py-4 w-full'>posts</div>
-      <div>Reference for later</div>
+      <div className='flex flex-col py-4 w-full'>Poster</div>
+      <div>Referanse for senere</div>
     </div>
   )
 }

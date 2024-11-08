@@ -12,32 +12,32 @@ export const cardData: {
 }[] = [
   {
     id: '1',
-    name: 'John Doe',
+    name: 'Ola Nordmann',
     image: card1,
-    status: 'Online',
+    status: 'Pålogget',
   },
   {
     id: '2',
-    name: 'Mark Doe',
+    name: 'Kari Hansen',
     image: card2,
-    status: 'Online',
+    status: 'Pålogget',
   },
   {
     id: '3',
-    name: 'Jana Jane',
+    name: 'Per Johansen',
     image: card3,
-    status: 'Offline',
+    status: 'Avlogget',
   },
   {
     id: '4',
-    name: 'Robert Bend',
+    name: 'Anne Larsen',
     image: card4,
-    status: 'Online',
+    status: 'Pålogget',
   },
   {
     id: '5',
-    name: 'Michael Bony',
+    name: 'Erik Olsen',
     image: card5,
-    status: 'Offline',
+    status: 'Avlogget',
   },
 ]
