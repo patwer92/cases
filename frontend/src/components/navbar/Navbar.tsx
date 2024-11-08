@@ -2,7 +2,7 @@ import React from 'react'
 import NavLinks from './NavLinks'
 import UserLinks from './UserLinks'
 
-const Navbar: React.FC = (): React.ReactNode => {
+const Navbar: React.FC = (): React.ReactElement => {
   return (
     <div className='flex justify-between items-center border-b border-gray-100 w-full px-44 py-2'>
       <div className='text-2xl font-extrabold text-gray-900 dark:text-white font-roboto'>

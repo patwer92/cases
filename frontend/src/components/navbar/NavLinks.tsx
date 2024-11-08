@@ -1,4 +1,4 @@
-const NavLinks: React.FC = (): React.ReactNode => {
+const NavLinks: React.FC = (): React.ReactElement => {
   return (
     <div className='flex justify-center items-center cursor-pointer'>
       <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500'>
