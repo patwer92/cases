@@ -5,7 +5,7 @@ const RightSidebar: React.FC = (): React.ReactElement => {
   const [input, setInput] = useState('')
 
   return (
-    <div className='flex flex-col h-screen bg-white shadow-lg border-2 rounded-1-xl mt-2 mx- '>
+    <div className='flex flex-col h-screen bg-white shadow-lg border-2 rounded-1-xl mt-2 mx-2 '>
       <div className='flex flex-col items-center relative'>
         <img
           className=' h-84 rounded-md'
@@ -26,7 +26,7 @@ const RightSidebar: React.FC = (): React.ReactElement => {
         <input
           className='border-0 outline-none mt-4'
           name='input'
-          //   value={input}
+          value={input}
           type='text'
           placeholder='Search friends'
           onChange={(e) => setInput(e.target.name)}
