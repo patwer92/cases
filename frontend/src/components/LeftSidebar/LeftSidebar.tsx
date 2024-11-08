@@ -108,7 +108,7 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             src={location}
             alt='location'
           />
-          <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none'>
+          <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none ml-2'>
             Drøbak, Norway
           </p>
         </div>
@@ -118,19 +118,19 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             src={job}
             alt='job'
           />
-          <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none'>
+          <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none ml-2'>
             React Utvikler
           </p>
         </div>
         <div className='flex justify-center items-center pt-10'>
           <p className='font-roboto font-bold text-md text-[#0177b7] no-underline tracking-normal leading-none'>
-            Eventer
+            Hendelser
           </p>
           <p className='font-roboto font-bold text-md text-[#0177b7] no-underline tracking-normal leading-none mx-2'>
             Grupper
           </p>
           <p className='font-roboto font-bold text-md text-[#0177b7] no-underline tracking-normal leading-none'>
-            Følg
+            Følgere
           </p>
           <p className='font-roboto font-bold text-md text-[#0177b7] no-underline tracking-normal leading-none mx-2'>
             Mer
@@ -138,7 +138,7 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
         </div>
       </div>
       <div className='ml-4 mt-10'>
-        <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none py-2'>
+        <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none py-2 mb-5'>
           Sosiale Nettverk
         </p>
         <div className='flex items-center'>

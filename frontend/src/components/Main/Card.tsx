@@ -20,14 +20,14 @@ const Card: React.FC<CardProps> = ({
           src={img}
           alt={name}
         />
-        <p className='absolute bottom-4 left-4 text-sm font-medium text-white font-roboto no-underline leading-none'>
+        <p className='absolute bottom-6 left-4 text-sm font-medium text-white font-roboto no-underline leading-none'>
           {name}
         </p>
         <p
           className={`${
             status === 'Avlogget'
-              ? 'absolute bottom-4 right-4 text-sm font-medium text-red-600 font-roboto no-underline leading-none'
-              : 'absolute bottom-4 right-4 text-sm font-medium text-green-400 font-roboto no-underline leading-none'
+              ? 'absolute bottom-6 right-4 text-sm font-medium text-red-600 font-roboto no-underline leading-none'
+              : 'absolute bottom-6 right-4 text-sm font-medium text-green-400 font-roboto no-underline leading-none'
           }`}
         >
           {status}

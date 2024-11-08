@@ -23,13 +23,15 @@ const Login: React.FC = (): React.ReactElement => {
   const initialValues = { email: '', password: '' }
 
   const validationSchema = Yup.object({
-    email: Yup.string().email('Invalid email address').required('Required'),
+    email: Yup.string()
+      .email('Ugyldig e-postadresse')
+      .required('Vennligst fyll ut din e-postadresse'),
     password: Yup.string()
-      .required('Required')
-      .min(6, 'Password must be at least 6 characters')
+      .required('Vennligst fyll ut ditt passord')
+      .min(6, 'Passordet må bestå av minst 6 tegn')
       .matches(
         /^(?=.*[a-zæøå])(?=.*[A-ZÆØÅ])(?=.*\d).{6,}$/,
-        'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+        'Passordet må inneholde minst én stor bokstav, én liten bokstav og ett tall'
       ),
   })
 

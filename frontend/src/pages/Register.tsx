@@ -26,12 +26,12 @@ const Register: React.FC = (): React.ReactElement => {
 
   const validationSchema = Yup.object({
     name: Yup.string()
-      .required('Vennligst fyll ut et navn')
+      .required('Vennligst fyll ut ditt navn')
       .min(3, 'Navnet må bestå av minst 3 tegn')
       .matches(/^[a-zA-ZæøåÆØÅ\s]+$/, 'Navn kan bare inneholde bokstaver'),
     email: Yup.string()
       .email('Ugyldig e-postadresse')
-      .required('Vennligst fyll ut en e-postadresse'),
+      .required('Vennligst fyll ut din e-postadresse'),
     password: Yup.string()
       .required('Vennligst fyll ut et passord')
       .min(6, 'Passordet må bestå av minst 6 tegn')
