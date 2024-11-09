@@ -1,10 +1,29 @@
-import React from 'react'
+import React, { useRef, useContext, useState } from 'react'
 import { Avatar, Button } from '@material-tailwind/react'
 import live from '../../assets/images/live.png'
 import smile from '../../assets/images/smile.png'
 import addImage from '../../assets/images/add-image.png'
+import { AuthContext } from '../../context/AuthContext/authContext'
 
 const Main: React.FC = (): React.ReactElement => {
+  const authContext = useContext(AuthContext)
+  if (!authContext) {
+    throw new Error('AuthContext must be used within an AuthContextProvider')
+  }
+  const { user, userData } = authContext
+  const text = useRef<HTMLInputElement>(null)
+  const [image, setImage] = useState(null)
+
+  const handleSubmitPost = async(e: React.FormEvent<HTMLFormElement>) => { 
+    e.preventDefault()
+    try {
+      if(text.current.value !== '') {
+
+    } catch (error) { 
+
+    }
+  }
+
   return (
     <div className='flex flex-col items-center'>
       <div className='flex flex-col py-4 w-full bg-white rounded-3xl shadow-lg'>
@@ -23,7 +42,12 @@ const Main: React.FC = (): React.ReactElement => {
                   className='outline-none w-full bg-white rounded-md'
                   name='text'
                   type='text'
-                  placeholder='Hva tenker du på, Brukerkonto?'
+                  placeholder={`Hva tenker du på, ${
+                    user?.displayName?.split(' ')[0] ||
+                    userData?.name?.charAt(0).toUpperCase() +
+                      userData?.name?.slice(1)
+                  }?`}
+                  ref={text}
                 />
               </div>
               <div className='mx-4 '>{/* put preview image here */}</div>

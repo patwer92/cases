@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Card,
   CardHeader,
@@ -8,10 +8,12 @@ import {
   Input,
   Button,
 } from '@material-tailwind/react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import ClipLoader from 'react-spinners/ClipLoader'
+import { AuthContext } from '../context/AuthContext/authContext'
+import { auth, onAuthStateChanged } from '../firebase/firebase'
 
 interface FormValues {
   name: string
@@ -21,6 +23,25 @@ interface FormValues {
 
 const Register: React.FC = (): React.ReactElement => {
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const authContext = useContext(AuthContext)
+  if (!authContext) {
+    throw new Error('AuthContext must be used within an AuthContextProvider')
+  }
+  const { registerWithEmailAndPassword } = authContext
+
+  useEffect(() => {
+    setLoading(true)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate('/')
+        setLoading(false)
+      } else {
+        setLoading(false)
+      }
+    })
+  }, [navigate])
 
   const initialValues = { name: '', email: '', password: '' }
 
@@ -46,11 +67,11 @@ const Register: React.FC = (): React.ReactElement => {
     email: string
     password: string
   }) => {
-    // const { email, password } = formik.values
     if (formik.isValid === true) {
-      alert('good')
+      registerWithEmailAndPassword(values.name, values.email, values.password)
       setLoading(true)
     } else {
+      setLoading(false)
       alert('Check your input fields')
     }
     console.log('Formik:', formik)
@@ -86,12 +107,12 @@ const Register: React.FC = (): React.ReactElement => {
               {...({} as React.ComponentProps<typeof CardHeader>)}
             >
               <Typography
-                className='text-center text-xl px-2'
+                className='text-center text-2xl px-2'
                 variant='h3'
                 color='white'
                 {...({} as React.ComponentProps<typeof Typography>)}
               >
-                Kom i gang - opprett en ny konto
+                Registrer en ny konto
               </Typography>
             </CardHeader>
             <CardBody
@@ -166,7 +187,7 @@ const Register: React.FC = (): React.ReactElement => {
                   fullWidth
                   {...({} as React.ComponentProps<typeof Button>)}
                 >
-                  Registrer deg nå
+                  Registrer
                 </Button>
               </form>
             </CardBody>

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Card,
   CardHeader,
@@ -8,11 +8,12 @@ import {
   Input,
   Button,
 } from '@material-tailwind/react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { AuthContext } from '../context/AuthContext/authContext'
+import { auth, onAuthStateChanged } from '../firebase/firebase'
 
 interface FormValues {
   email: string
@@ -20,9 +21,26 @@ interface FormValues {
 }
 
 const Login: React.FC = (): React.ReactElement => {
-  const { signInWithGoogle } = useContext(AuthContext)
-
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const authContext = useContext(AuthContext)
+  if (!authContext) {
+    throw new Error('AuthContext must be used within an AuthContextProvider')
+  }
+  const { signInWithGoogle, loginWithEmailAndPassword } = authContext
+
+  useEffect(() => {
+    setLoading(true)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate('/')
+        setLoading(false)
+      } else {
+        setLoading(false)
+      }
+    })
+  }, [navigate])
 
   const initialValues = {
     email: '',
@@ -45,9 +63,10 @@ const Login: React.FC = (): React.ReactElement => {
   const handleLoginSubmit = (values: { email: string; password: string }) => {
     // const { email, password } = formik.values
     if (formik.isValid === true) {
-      alert('good')
+      loginWithEmailAndPassword(values.email, values.password)
       setLoading(true)
     } else {
+      setLoading(false)
       alert('Check your input fields')
     }
     console.log('Formik:', formik)
@@ -89,7 +108,7 @@ const Login: React.FC = (): React.ReactElement => {
                 className='text-2xl'
                 {...({} as React.ComponentProps<typeof Typography>)}
               >
-                Velkommen tilbake!
+                Velkommen!
               </Typography>
             </CardHeader>
             <CardBody

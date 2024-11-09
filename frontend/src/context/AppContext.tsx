@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  User,
 } from 'firebase/auth'
 import { auth, db, onAuthStateChanged } from '../firebase/firebase'
 import {
@@ -16,28 +17,45 @@ import {
   getDocs,
   addDoc,
   onSnapshot,
+  DocumentData,
 } from 'firebase/firestore'
 import { useNavigate } from 'react-router-dom'
 
+// Typedefinisjoner for funksjonsparametere og returtyper
 interface AppContextProps {
   children: ReactNode
 }
+interface AuthContextValue {
+  signInWithGoogle: () => Promise<void>
+  loginWithEmailAndPassword: (email: string, password: string) => Promise<void>
+  registerWithEmailAndPassword: (
+    name: string,
+    email: string,
+    password: string
+  ) => Promise<void>
+  sendPasswordToUser: (email: string) => Promise<void>
+  signOutUser: () => Promise<void>
+  user: User | null
+  userData: DocumentData | null
+}
 
-// Provider-komponent
+// Provider-komponent som brukes til å håndtere autentisering og datatilgang
 const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   const collectionUserRef = collection(db, 'users')
   const provider = new GoogleAuthProvider()
-  const [user, setUser] = useState<object | null>(null)
-  const [userData, setUserData] = useState<object | null>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [userData, setUserData] = useState<DocumentData | null>(null)
 
-  const navigate = useNavigate
+  const navigate = useNavigate()
 
-  const signInWithGoogle = async () => {
+  // Logg inn med Google og opprett bruker i Firestore om den ikke finnes fra før
+  const signInWithGoogle = async (): Promise<void> => {
     try {
       const popup = await signInWithPopup(auth, provider)
       const user = popup.user
       const q = query(collectionUserRef, where('uid', '==', user.uid))
       const docs = await getDocs(q)
+
       if (docs.docs.length === 0) {
         await addDoc(collectionUserRef, {
           uid: user?.uid,
@@ -48,21 +66,30 @@ const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         })
       }
     } catch (error) {
-      alert(error)
+      alert('Feil ved Google-innlogging')
       console.log('Error:', error)
     }
   }
 
-  const loginWithEmailAndPassword = async (email, password) => {
+  // Logg inn med e-post og passord
+  const loginWithEmailAndPassword = async (
+    email: string,
+    password: string
+  ): Promise<void> => {
     try {
       await signInWithEmailAndPassword(auth, email, password)
     } catch (error) {
-      alert(error)
+      alert('Feil ved innlogging med e-post og passord')
       console.log('Error:', error)
     }
   }
 
-  const registerWithEmailAndPassword = async (name, email, password) => {
+  // Registrer ny bruker med e-post og passord og lagre brukerdata i Firestore
+  const registerWithEmailAndPassword = async (
+    name: string,
+    email: string,
+    password: string
+  ): Promise<void> => {
     try {
       const response = await createUserWithEmailAndPassword(
         auth,
@@ -77,33 +104,40 @@ const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
         providerId: 'email/password',
       })
     } catch (error) {
-      console.log('Error:', error)
+      console.log('Feil ved registrering av ny bruker:', error)
     }
   }
 
-  const sendPasswordToUser = async (email) => {
+  // Send e-post for å tilbakestille passord
+  const sendPasswordToUser = async (email: string): Promise<void> => {
     try {
-      await sendPasswordResetEmail(auth, email).then((res) => {
-        console.log('Email sent:', res)
-      })
+      await sendPasswordResetEmail(auth, email)
       alert('Nytt passord er sendt til din e-postadresse')
     } catch (error) {
-      console.log('Error:', error)
+      console.log('Feil ved sending av tilbakestillings-e-post:', error)
     }
   }
 
-  const signOutUser = async () => {
-    await signOut(auth)
+  // Logg ut brukeren
+  const signOutUser = async (): Promise<void> => {
+    try {
+      await signOut(auth)
+      setUser(null)
+      navigate('/login')
+    } catch (error) {
+      console.log('Feil ved utlogging:', error)
+    }
   }
 
-  const userStateChanged = async () => {
-    onAuthStateChanged(auth, async () => {
-      if (user) {
-        const q = query(collectionUserRef, where('uid', '==', user?.uid))
+  // Håndterer endringer i brukerens autentiseringsstatus
+  const userStateChanged = async (): Promise<void> => {
+    onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        const q = query(collectionUserRef, where('uid', '==', currentUser.uid))
         onSnapshot(q, (doc) => {
-          setUserData(doc?.docs[0]?.data())
+          setUserData(doc.docs[0]?.data() || null)
         })
-        setUser(user)
+        setUser(currentUser)
       } else {
         setUser(null)
         navigate('/login')
@@ -111,6 +145,7 @@ const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
     })
   }
 
+  // useEffect for å lytte på endringer i brukerstatus
   useEffect(() => {
     userStateChanged()
     if (user || userData) {
@@ -118,18 +153,22 @@ const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
     } else {
       navigate('/login')
     }
-    return () => userStateChanged()
+    return () => {
+      // Rens eventuelle lyttere for brukerstatus
+    }
   }, [])
 
-  const initialState = {
-    signInWithGoogle: signInWithGoogle,
-    loginWithEmailAndPassword: loginWithEmailAndPassword,
-    registerWithEmailAndPassword: registerWithEmailAndPassword,
-    sendPasswordToUser: sendPasswordToUser,
-    signOutUser: signOutUser,
-    user: user,
-    userData: userData,
+  const initialState: AuthContextValue = {
+    signInWithGoogle,
+    loginWithEmailAndPassword,
+    registerWithEmailAndPassword,
+    sendPasswordToUser,
+    signOutUser,
+    user,
+    userData,
   }
+
+  console.log('userdata', userData)
 
   return (
     <AuthContext.Provider value={initialState}>{children}</AuthContext.Provider>

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useContext } from 'react'
 import { Tooltip, Avatar } from '@material-tailwind/react'
 import sunset from '../../assets/images/sunset.jpg'
 import job from '../../assets/images/job.png'
@@ -9,6 +9,7 @@ import laptop from '../../assets/images/laptop.jpg'
 import media from '../../assets/images/media.jpg'
 import apps from '../../assets/images/apps.jpg'
 import tik from '../../assets/images/tik.jpg'
+import { AuthContext } from '../../context/AuthContext/authContext'
 
 interface ImageData {
   id: string
@@ -18,6 +19,12 @@ interface ImageData {
 const LeftSidebar: React.FC = (): React.ReactElement => {
   const [data, setData] = useState<ImageData | null>(null)
   const count = useRef(0)
+
+  const authContext = useContext(AuthContext)
+  if (!authContext) {
+    throw new Error('AuthContext must be used within an AuthContextProvider')
+  }
+  const { user, userData } = authContext
 
   const handleRandom = (arr: ImageData[]) => {
     setData(arr[Math.floor(Math.random() * arr.length)])
@@ -81,8 +88,9 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
         <img
           src={sunset}
           alt='Vibrant sunset over the ocean, with shades of orange, pink, and purple in the sky and gentle waves reflecting the colors.'
+          className='rounded-md'
         />
-        <div className='absolute -bottom-4'>
+        <div className='absolute -bottom-8'>
           <Tooltip
             content='Profile'
             placement='top'
@@ -96,9 +104,12 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
           </Tooltip>
         </div>
       </div>
-      <div className='flex flex-col items-center pt-8'>
-        <p className='font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none'>
-          Brukerkonto
+      <div className='flex flex-col items-center pt-12'>
+        <p className='font-roboto font-bold text-md text-gray-900 no-underline tracking-normal leading-none pb-2'>
+          {userData?.name}
+        </p>
+        <p className='font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none'>
+          {user?.email || userData?.email}
         </p>
       </div>
       <div className='flex flex-col pl-2 mt-10'>

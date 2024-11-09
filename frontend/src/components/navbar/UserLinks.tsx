@@ -1,7 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Tooltip, Avatar } from '@material-tailwind/react'
+import { AuthContext } from '../../context/AuthContext/authContext'
 
 const UserLinks: React.FC = (): React.ReactElement => {
+  const authContext = useContext(AuthContext)
+  if (!authContext) {
+    throw new Error('AuthContext must be used within an AuthContextProvider')
+  }
+  const { signOutUser, user, userData } = authContext
+
   return (
     <div className='flex justify-center items-center cursor-pointer'>
       <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500'>
@@ -52,7 +59,10 @@ const UserLinks: React.FC = (): React.ReactElement => {
           />
         </svg>
       </div>
-      <div className='mx-4 flex items-center'>
+      <div
+        className='mx-4 flex items-center'
+        onClick={signOutUser}
+      >
         <Tooltip
           content='Logg ut'
           placement='bottom'
@@ -65,7 +75,9 @@ const UserLinks: React.FC = (): React.ReactElement => {
           />
         </Tooltip>
         <p className='ml-4 font-roboto text-sm text-black font-medium no-underline'>
-          Brukerkonto
+          {user?.displayName === null && userData?.name !== undefined
+            ? userData?.name?.charAt(0).toUpperCase() + userData?.name?.slice(1)
+            : userData?.name}
         </p>
       </div>
     </div>
@@ -73,3 +85,5 @@ const UserLinks: React.FC = (): React.ReactElement => {
 }
 
 export default UserLinks
+
+// user?.displayName?.split('')[0]
