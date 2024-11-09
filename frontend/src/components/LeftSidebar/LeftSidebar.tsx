@@ -109,7 +109,7 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             alt='location'
           />
           <p className='font-roboto font-bold text-lg no-underline tracking-normal leading-none ml-2'>
-            Drøbak, Norway
+            Oslo
           </p>
         </div>
         <div className='flex items-center'>

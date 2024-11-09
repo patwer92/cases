@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   Card,
   CardHeader,
@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import ClipLoader from 'react-spinners/ClipLoader'
+import { AuthContext } from '../context/AuthContext/authContext'
 
 interface FormValues {
   email: string
@@ -19,8 +20,14 @@ interface FormValues {
 }
 
 const Login: React.FC = (): React.ReactElement => {
+  const { signInWithGoogle } = useContext(AuthContext)
+
   const [loading, setLoading] = useState(false)
-  const initialValues = { email: '', password: '' }
+
+  const initialValues = {
+    email: '',
+    password: '',
+  }
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -150,6 +157,7 @@ const Login: React.FC = (): React.ReactElement => {
                 variant='gradient'
                 fullWidth
                 color='blue'
+                onClick={signInWithGoogle}
                 {...({} as React.ComponentProps<typeof Button>)}
               >
                 Logg på med Google
