@@ -96,7 +96,10 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             placement='top'
           >
             <Avatar
-              src='https://docs.material-tailwind.com/img/face-2.jpg'
+              src={
+                user?.photoURL ||
+                'https://docs.material-tailwind.com/img/face-2.jpg'
+              }
               size='xxl'
               alt='avatar'
               {...({} as React.ComponentProps<typeof Avatar>)}

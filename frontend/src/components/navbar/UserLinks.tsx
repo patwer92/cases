@@ -68,7 +68,10 @@ const UserLinks: React.FC = (): React.ReactElement => {
           placement='bottom'
         >
           <Avatar
-            src='https://docs.material-tailwind.com/img/face-2.jpg'
+            src={
+              user?.photoURL ||
+              'https://docs.material-tailwind.com/img/face-2.jpg'
+            }
             alt='avatar'
             size='sm'
             {...({} as React.ComponentProps<typeof Avatar>)}

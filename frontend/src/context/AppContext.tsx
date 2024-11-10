@@ -168,8 +168,6 @@ const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
     userData,
   }
 
-  console.log('userdata', userData)
-
   return (
     <AuthContext.Provider value={initialState}>{children}</AuthContext.Provider>
   )
