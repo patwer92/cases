@@ -195,7 +195,7 @@ const Main: React.FC = (): React.ReactElement => {
       return () => unsubscribe() // Avregistrerer observeren ved unmount
     }
     postData()
-  }, [SUBMIT_POST])
+  }, [collectionRef, SUBMIT_POST])
 
   return (
     <div className='flex flex-col items-center'>

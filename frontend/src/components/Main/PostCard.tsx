@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from 'react'
+import React, { useContext, useEffect, useReducer, useState } from 'react'
 import { Avatar } from '@material-tailwind/react'
 import commentIcon from '../../assets/images/comment.png'
 import likeIcon from '../../assets/images/like.png'
@@ -24,6 +24,7 @@ import {
   postActions,
   postStates,
 } from '../../context/PostContext/postReducer'
+import CommentSection from './CommentSection'
 
 // Definerte typer for props
 interface PostCardProps {
@@ -52,6 +53,10 @@ const PostCard: React.FC<PostCardProps> = ({
     throw new Error('AuthContext must be used within an AuthContextProvider')
   }
   const { user } = authContext
+  const [state, dispatch] = useReducer(postReducer, postStates)
+  const likesRef = collection(db, 'posts', id, 'likes')
+  const singlePostDocument = doc(db, 'posts', id)
+  const [open, setOpen] = useState(false)
 
   // Valider timestamp og håndter ugyldige verdier
   let formattedTimestamp = 'Ukjent dato'
@@ -79,15 +84,10 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   }
 
-  const [state, dispatch] = useReducer(postReducer, postStates)
-  const likesRef = collection(db, 'posts', id, 'likes')
-
-  //   const [open, setOpen] = useState(false)
-
-  //   const handleOpen = (e) => {
-  //     e.preventDefault()
-  //     setOpen(true)
-  //   }
+  const handleOpen = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setOpen(true)
+  }
 
   const addUser = async () => {
     try {
@@ -137,6 +137,20 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   }
 
+  const deletePost = async (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    try {
+      if (user?.uid === uid) {
+        await deleteDoc(singlePostDocument)
+      } else {
+        alert('Du har ikke tilgang til å slette dette innlegget')
+      }
+    } catch (error) {
+      console.log('Error deleting post:', error)
+      alert('Error deleting post')
+    }
+  }
+
   useEffect(() => {
     const getLikes = async () => {
       try {
@@ -158,19 +172,23 @@ const PostCard: React.FC<PostCardProps> = ({
   }, [id])
 
   return (
-    <div className='mb-4'>
+    <div className='mb-5'>
       <div className='flex flex-col py-4 bg-white rounded-t-3xl'>
-        <div className='flex items-center pb-4 ml-2'>
+        <div className='flex items-center pb-6 ml-5'>
           <Avatar
-            size='sm'
+            size='md'
             variant='circular'
             src={userImg || 'https://docs.material-tailwind.com/img/face-2.jpg'}
             alt='profile image'
+            className='mb-4'
             {...({} as React.ComponentProps<typeof Avatar>)}
           />
-          <div className='flex flex-col'>
+          <div className='flex flex-col mt-2'>
+            <p className='ml-4 font-roboto font-medium text-sm text-black/90 no-underline tracking-normal leading-none'>
+              {name}
+            </p>
             <p className='ml-4 py-2 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none'>
-              {email}
+              @{email}
             </p>
             <p className='ml-4 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none'>
               Publisert: {formattedTimestamp}
@@ -190,7 +208,7 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
         </div>
         <div>
-          <p className='ml-4 pb-4 font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none'>
+          <p className='ml-6 pb-4 font-roboto font-medium text-sm text-black/90 no-underline tracking-normal leading-none'>
             {text}
           </p>
           {image && (
@@ -202,51 +220,61 @@ const PostCard: React.FC<PostCardProps> = ({
           )}
         </div>
         <div className='flex justify-between items-center pt-4'>
-          <button
-            onClick={handleLike}
-            className='flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100 ml-4'
+          <div className='w-52'>
+            <button
+              onClick={handleLike}
+              className='flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100 ml-6'
+            >
+              <img
+                className='h-8 mr-4'
+                src={likeIcon}
+                alt='like-icon'
+              />
+              {/* Vis antall likes */}
+              <p className='flex'>
+                {state.likes.length > 0 && (
+                  <span>
+                    {state.likes.length}{' '}
+                    {state.likes.some((like) => like.uid === user?.uid)
+                      ? '(Du liker dette)'
+                      : ''}
+                  </span>
+                )}
+              </p>
+            </button>
+          </div>
+
+          <div
+            className='flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100 mr-20'
+            onClick={handleOpen}
           >
-            <img
-              className='h-8 mr-4'
-              src={likeIcon}
-              alt='like-icon'
-            />
-            {/* Vis antall likes */}
-            <p className='flex'>
-              {state.likes.length > 0 && (
-                <span>
-                  {state.likes.length}{' '}
-                  {state.likes.some((like) => like.uid === user?.uid)
-                    ? '(Du liker dette)'
-                    : ''}
-                </span>
-              )}
-            </p>
-          </button>
-          <div className='flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100'>
-            <div className='flex items-center cursor-pointer'>
+            <div className='flex items-center '>
               <img
                 src={commentIcon}
                 alt='comment-icon'
-                className='h-8 mr-4'
+                className=' h-8 mr-4'
               />
-              <p className='font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none'>
-                Kommenter
+              <p className='font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none '>
+                Kommentarer
               </p>
             </div>
           </div>
-          <div className='flex items-center cursor-pointer rounded-lg p-2 hover:bg-gray-100 mr-4'>
+          <div
+            className='flex items-center cursor-pointer rounded-lg  hover:bg-gray-100 p-2 mr-6'
+            onClick={deletePost}
+          >
             <img
               src={deleteIcon}
               alt='delete-icon'
               className='h-8 mr-4'
             />
-            <p className='font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none pr-2 '>
+            <p className='font-roboto font-medium text-md text-gray-700 no-underline tracking-normal leading-none '>
               Slett
             </p>
           </div>
         </div>
       </div>
+      {open && <CommentSection postId={id}></CommentSection>}
     </div>
   )
 }
