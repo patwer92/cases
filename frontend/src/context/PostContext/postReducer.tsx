@@ -1,49 +1,5 @@
-// // Typer for action
-// interface PostAction {
-//   type: typeof postActions.SUBMIT_POST | typeof postActions.HANDLE_ERROR
-//   posts?: Array<{ [key: string]: string }> // Spesifiser en detaljert type hvis mulig
-// }
-
-// // Typer for state
-// interface PostState {
-//   error: boolean
-//   posts: Array<{ [key: string]: string }> // Spesifiser en detaljert type hvis mulig
-// }
-
-// export const postActions = {
-//   SUBMIT_POST: 'SUBMIT_POST' as const,
-//   HANDLE_ERROR: 'HANDLE_ERROR' as const,
-// }
-
-// export const postStates: PostState = {
-//   error: false,
-//   posts: [],
-// }
-
-// // Reducer-funksjon med spesifikke typer
-// export const postReducer = (
-//   state: PostState,
-//   action: PostAction
-// ): PostState => {
-//   switch (action.type) {
-//     case postActions.SUBMIT_POST:
-//       return {
-//         ...state,
-//         error: false,
-//         posts: [...state.posts, ...(action.posts || [])], // Legg til nye poster
-//       }
-//     case postActions.HANDLE_ERROR:
-//       return {
-//         ...state,
-//         error: true,
-//         posts: [],
-//       }
-//     default:
-//       return state
-//   }
-// }
-
 import { Timestamp } from 'firebase/firestore' // Importer hvis ikke gjort tidligere
+import { Like } from '../../types/types'
 
 // Definer typen for Post
 interface Post {
@@ -57,38 +13,45 @@ interface Post {
   timestamp: Timestamp | string // Tillater begge typer
 }
 
+// Definer postActions
 export const postActions = {
   SUBMIT_POST: 'SUBMIT_POST',
   HANDLE_ERROR: 'HANDLE_ERROR',
   ADD_LIKE: 'ADD_LIKE',
-}
+} as const // Bruk 'as const' for å sikre readonly literals
 
 // Initial state med riktig type
 export const postStates = {
   error: false,
-  posts: [] as Post[], // Typeannoterer posts som en liste av Post-objekter
-  likes: [] as string[], // Typeannoterer likes som en liste av strenger
+  posts: [] as Post[],
+  likes: [] as Like[],
 }
+
+// Definerte typer for handlinger
+type ActionType =
+  | { type: typeof postActions.SUBMIT_POST; posts: Post[] }
+  | { type: typeof postActions.ADD_LIKE; likes: Like[] }
+  | { type: typeof postActions.HANDLE_ERROR }
 
 // Reducer-funksjon med spesifikke typer
 export const postReducer = (
   state: typeof postStates,
-  action: { type: string; posts?: Post[] }
-) => {
+  action: ActionType
+): typeof postStates => {
   switch (action.type) {
-    case 'SUBMIT_POST':
+    case postActions.SUBMIT_POST:
       return {
         ...state,
         error: false,
         posts: action.posts || [],
       }
-    case 'ADD_LIKE':
+    case postActions.ADD_LIKE:
       return {
         ...state,
         error: false,
         likes: action.likes || [],
       }
-    case 'HANDLE_ERROR':
+    case postActions.HANDLE_ERROR:
       return {
         ...state,
         error: true,

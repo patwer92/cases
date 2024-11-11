@@ -87,6 +87,7 @@ const Main: React.FC = (): React.ReactElement => {
   const handleSubmitPost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     console.log('handleSubmitPost funksjon kalt') // Bekreft at funksjonen kjører
+
     if (text.current && text.current.value !== '') {
       try {
         await setDoc(postRef, {
@@ -100,7 +101,13 @@ const Main: React.FC = (): React.ReactElement => {
           timestamp: serverTimestamp(),
         })
         console.log('Post lagret til Firestore') // Bekreft at data blir sendt
-        text.current.value = '' // Tøm input-feltet etter innsendelse
+
+        // Sjekk om `text.current` eksisterer før du prøver å sette verdien
+        if (text.current) {
+          text.current.value = '' // Tøm input-feltet etter innsendelse
+        } else {
+          console.warn('text.current er null, kan ikke sette verdi.')
+        }
       } catch (error) {
         dispatch({ type: HANDLE_ERROR })
         console.log('Error ved lagring av post:', error)
@@ -334,7 +341,7 @@ const Main: React.FC = (): React.ReactElement => {
                     email={post.email}
                     image={post.image}
                     text={post.text}
-                    timestamp={postTimestamp} // Bruker den formaterte strengen
+                    timestamp={postTimestamp}
                   />
                 )
               })}
