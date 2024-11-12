@@ -69,6 +69,7 @@ const Main: React.FC = (): React.ReactElement => {
   const [image, setImage] = useState<ImageType>(null)
   const [file, setFile] = useState<FileType>(null)
   const [progressBar, setProgressBar] = useState<number>(0)
+  const [isNewPost, setIsNewPost] = useState(false) // Ny state for å spore ny post
 
   // Firebase referanser
   const collectionRef = collection(db, 'posts')
@@ -102,7 +103,7 @@ const Main: React.FC = (): React.ReactElement => {
         })
         console.log('Post lagret til Firestore') // Bekreft at data blir sendt
 
-        // Sjekk om `text.current` eksisterer før du prøver å sette verdien
+        setIsNewPost(true) // Sett isNewPost til true etter å ha lagret en ny post
         if (text.current) {
           text.current.value = '' // Tøm input-feltet etter innsendelse
         } else {
@@ -169,33 +170,32 @@ const Main: React.FC = (): React.ReactElement => {
     const postData = async () => {
       const q = query(collectionRef, orderBy('timestamp', 'asc'))
       const unsubscribe = onSnapshot(q, (snapshot) => {
-        const postsData: Post[] = snapshot.docs.map((item) => {
-          const data = item.data()
-          return {
-            uid: data.uid || '',
-            documentId: data.documentId || '',
-            userImg: data.userImg || '',
-            name: data.name || '',
-            email: data.email || '',
-            text: data.text || '',
-            image: data.image || '',
-            timestamp: data.timestamp || '', // La timestamp være enten Timestamp eller string
-          }
-        })
-        // Oppdaterer state med nye poster
+        const postsData = snapshot.docs.map((item) => ({
+          uid: item.data().uid || '',
+          documentId: item.data().documentId || '',
+          userImg: item.data().userImg || '',
+          name: item.data().name || '',
+          email: item.data().email || '',
+          text: item.data().text || '',
+          image: item.data().image || '',
+          timestamp: item.data().timestamp || '',
+        }))
+
         dispatch({
-          type: SUBMIT_POST,
+          type: postActions.SUBMIT_POST,
           posts: postsData,
         })
-        scrollRef.current?.scrollIntoView({ behavior: 'smooth' }) // Ruller til bunnen
-        setImage(null) // Tilbakestiller image state
-        setFile(null) // Tilbakestiller fil state
-        setProgressBar(0) // Tilbakestiller progresjon
+
+        // Kun scroll til ny post hvis isNewPost er true
+        if (isNewPost) {
+          scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+          setIsNewPost(false) // Tilbakestill isNewPost etter scrolling
+        }
       })
-      return () => unsubscribe() // Avregistrerer observeren ved unmount
+      return () => unsubscribe()
     }
     postData()
-  }, [collectionRef, SUBMIT_POST])
+  }, [collectionRef, SUBMIT_POST, isNewPost])
 
   return (
     <div className='flex flex-col items-center'>
@@ -281,7 +281,7 @@ const Main: React.FC = (): React.ReactElement => {
                 onClick={submitImage}
                 {...({} as React.ComponentProps<typeof Button>)}
               >
-                LAST OPP
+                Last opp bilde
               </Button>
             )}
           </div>
@@ -292,7 +292,7 @@ const Main: React.FC = (): React.ReactElement => {
               alt='live'
             />
             <p className='font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none'>
-              GÅ LIVE
+              Gå Live
             </p>
           </div>
           <div className='flex items-center'>
@@ -302,7 +302,7 @@ const Main: React.FC = (): React.ReactElement => {
               alt='feeling'
             />
             <p className='font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none'>
-              FØLELSE
+              Følelse
             </p>
           </div>
         </div>
@@ -311,7 +311,7 @@ const Main: React.FC = (): React.ReactElement => {
         {state.error ? (
           <div className='flex justify-center items-center'>
             <Alert color='red'>
-              Noe gikk galt. Vennligst last opp siden på nytt...
+              Noe gikk galt. Vennligst prøv igjen på nytt...
             </Alert>
           </div>
         ) : (
@@ -348,7 +348,7 @@ const Main: React.FC = (): React.ReactElement => {
           </div>
         )}
       </div>
-      <div ref={scrollRef}>{/*Referanse for rulling*/}</div>
+      <div ref={scrollRef}>{/*Referanse for scroll*/}</div>
     </div>
   )
 }

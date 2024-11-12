@@ -13,7 +13,6 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { AuthContext } from '../context/AuthContext/authContext'
-import { auth, onAuthStateChanged } from '../firebase/firebase'
 
 interface FormValues {
   email: string
@@ -28,24 +27,7 @@ const Login: React.FC = (): React.ReactElement => {
   if (!authContext) {
     throw new Error('AuthContext must be used within an AuthContextProvider')
   }
-  const { signInWithGoogle, loginWithEmailAndPassword } = authContext
-
-  useEffect(() => {
-    setLoading(true)
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate('/')
-        setLoading(false)
-      } else {
-        setLoading(false)
-      }
-    })
-  }, [navigate])
-
-  const initialValues = {
-    email: '',
-    password: '',
-  }
+  const { signInWithGoogle, loginWithEmailAndPassword, user } = authContext
 
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -73,11 +55,24 @@ const Login: React.FC = (): React.ReactElement => {
     console.log('Values:', values)
   }
 
+  const initialValues: FormValues = {
+    email: '',
+    password: '',
+  }
+
   const formik = useFormik<FormValues>({
     initialValues,
     validationSchema,
     onSubmit: handleLoginSubmit,
   })
+
+  useEffect(() => {
+    if (user) {
+      navigate('/')
+    } else {
+      setLoading(false)
+    }
+  }, [user, navigate])
 
   return (
     <>

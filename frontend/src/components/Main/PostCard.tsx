@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react'
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react'
 import { Avatar } from '@material-tailwind/react'
 import commentIcon from '../../assets/images/comment.png'
 import likeIcon from '../../assets/images/like.png'
@@ -35,7 +41,7 @@ interface PostCardProps {
   email: string
   text: string
   image?: string // Valgfritt, siden noen innlegg kanskje ikke har et bilde
-  timestamp: Timestamp | string
+  timestamp: Timestamp | string | null // Tillater `null`
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -58,29 +64,31 @@ const PostCard: React.FC<PostCardProps> = ({
   const singlePostDocument = doc(db, 'posts', id)
   const [open, setOpen] = useState(false)
 
-  // Valider timestamp og håndter ugyldige verdier
-  let formattedTimestamp = 'Ukjent dato'
-  if (timestamp) {
-    try {
-      const date =
-        timestamp instanceof Timestamp
-          ? timestamp.toDate()
-          : new Date(timestamp)
+  // Kontroller om `timestamp` er gyldig før formatering
+  let formattedTimestamp = 'Laster...'
 
-      // Sjekk om `date` er gyldig før formatering
-      if (!isNaN(date.getTime())) {
-        formattedTimestamp = new Intl.DateTimeFormat('no-NO', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-        }).format(date)
-      } else {
-        console.error('Invalid date object:', date)
+  if (timestamp) {
+    // Valider at `timestamp` er enten `Timestamp` eller en `string` med riktig datoformat
+    let date: Date | null = null
+
+    if (timestamp instanceof Timestamp) {
+      date = timestamp.toDate()
+    } else if (typeof timestamp === 'string') {
+      const parsedDate = new Date(timestamp)
+      if (!isNaN(parsedDate.getTime())) {
+        date = parsedDate
       }
-    } catch (error) {
-      console.error('Invalid timestamp value:', timestamp, error)
+    }
+
+    // Hvis `date` er gyldig, formatter datoen; ellers la `formattedTimestamp` være 'Laster...'
+    if (date) {
+      formattedTimestamp = new Intl.DateTimeFormat('no-NO', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(date)
     }
   }
 
@@ -106,11 +114,9 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   }
 
-  const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
+  const handleLike = useCallback(async () => {
     console.log('handleLike kalt')
     try {
-      // Søk etter eksisterende like fra den innloggede brukeren
       const q = query(likesRef, where('uid', '==', user?.uid))
       const querySnapshot = await getDocs(q)
       const likesDocId =
@@ -118,24 +124,18 @@ const PostCard: React.FC<PostCardProps> = ({
 
       if (likesDocId) {
         // Hvis brukeren allerede har likt, fjern like
-        console.log('Liker funnet, fjerner like:', likesDocId)
-        const deleteId = doc(db, 'posts', id, 'likes', likesDocId)
-        await deleteDoc(deleteId)
+        await deleteDoc(doc(db, 'posts', id, 'likes', likesDocId))
         console.log('Like fjernet')
       } else {
         // Hvis brukeren ikke har likt, legg til en like
-        console.log('Ingen eksisterende like funnet, legger til like')
-        const newLikeRef = doc(likesRef) // Opprett en ny dokumentreferanse
-        await setDoc(newLikeRef, {
-          uid: user?.uid,
-        })
+        const newLikeRef = doc(likesRef)
+        await setDoc(newLikeRef, { uid: user?.uid })
         console.log('Like lagt til')
       }
     } catch (error) {
-      alert('Error handling like: ' + error)
-      console.log('Error:', error)
+      console.log('Error handling like:', error)
     }
-  }
+  }, [user, id, likesRef])
 
   const deletePost = async (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -169,7 +169,7 @@ const PostCard: React.FC<PostCardProps> = ({
       }
     }
     getLikes()
-  }, [id])
+  }, [likesRef])
 
   return (
     <div className='mb-5'>

@@ -130,32 +130,26 @@ const AppContextProvider: React.FC<AppContextProps> = ({ children }) => {
   }
 
   // Håndterer endringer i brukerens autentiseringsstatus
-  const userStateChanged = async (): Promise<void> => {
-    onAuthStateChanged(auth, (currentUser) => {
+
+  // useEffect for å lytte på endringer i brukerstatus
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        const q = query(collectionUserRef, where('uid', '==', currentUser.uid))
+        const q = query(
+          collection(db, 'users'),
+          where('uid', '==', currentUser.uid)
+        )
         onSnapshot(q, (doc) => {
           setUserData(doc.docs[0]?.data() || null)
         })
         setUser(currentUser)
       } else {
         setUser(null)
-        navigate('/login')
+        setUserData(null)
       }
     })
-  }
 
-  // useEffect for å lytte på endringer i brukerstatus
-  useEffect(() => {
-    userStateChanged()
-    if (user || userData) {
-      navigate('/')
-    } else {
-      navigate('/login')
-    }
-    return () => {
-      // Rens eventuelle lyttere for brukerstatus
-    }
+    return () => unsubscribe()
   }, [])
 
   const initialState: AuthContextValue = {
