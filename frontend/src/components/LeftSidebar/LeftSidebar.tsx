@@ -9,6 +9,7 @@ import laptop from '../../assets/images/laptop.jpg'
 import media from '../../assets/images/media.jpg'
 import apps from '../../assets/images/apps.jpg'
 import tik from '../../assets/images/tik.jpg'
+import avatar from '../../assets/images/avatar.png'
 import { AuthContext } from '../../context/AuthContext/authContext'
 
 interface ImageData {
@@ -96,12 +97,9 @@ const LeftSidebar: React.FC = (): React.ReactElement => {
             placement='top'
           >
             <Avatar
-              src={
-                user?.photoURL ||
-                'https://docs.material-tailwind.com/img/face-2.jpg'
-              }
+              src={user?.photoURL || avatar}
               size='xxl'
-              alt='avatar'
+              alt='User profile image'
               {...({} as React.ComponentProps<typeof Avatar>)}
             />
           </Tooltip>

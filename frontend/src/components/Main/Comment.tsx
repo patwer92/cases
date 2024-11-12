@@ -1,5 +1,6 @@
 import React from 'react'
 import { Avatar } from '@material-tailwind/react'
+import avatar from '../../assets/images/avatar.png'
 
 // Props for Comment-komponenten
 interface CommentProps {
@@ -20,7 +21,7 @@ const Comment: React.FC<CommentProps> = ({
           size='sm'
           alt='avatar'
           variant='circular'
-          src={image || 'https://docs.material-tailwind.com/img/face-2.jpg'}
+          src={image || avatar}
           {...({} as React.ComponentProps<typeof Avatar>)}
         />
       </div>

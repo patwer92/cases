@@ -9,6 +9,7 @@ import { Avatar, Button, Alert } from '@material-tailwind/react'
 import live from '../../assets/images/live.png'
 import smile from '../../assets/images/smile.png'
 import addImage from '../../assets/images/add-image.png'
+import avatar from '../../assets/images/avatar.png'
 import { AuthContext } from '../../context/AuthContext/authContext'
 import {
   collection,
@@ -204,10 +205,7 @@ const Main: React.FC = (): React.ReactElement => {
           <Avatar
             size='sm'
             variant='circular'
-            src={
-              user?.photoURL ||
-              'https://docs.material-tailwind.com/img/face-2.jpg'
-            }
+            src={user?.photoURL || avatar}
             alt='profile image'
             {...({} as React.ComponentProps<typeof Avatar>)}
           />
@@ -331,10 +329,7 @@ const Main: React.FC = (): React.ReactElement => {
                   <PostCard
                     key={index}
                     {...({} as React.ComponentProps<typeof PostCard>)}
-                    userImg={
-                      post.userImg ||
-                      'https://docs.material-tailwind.com/img/face-2.jpg'
-                    }
+                    userImg={post.userImg || avatar}
                     id={post.documentId}
                     uid={post.uid}
                     name={post.name}

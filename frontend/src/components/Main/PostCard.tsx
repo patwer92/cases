@@ -10,6 +10,7 @@ import commentIcon from '../../assets/images/comment.png'
 import likeIcon from '../../assets/images/like.png'
 import deleteIcon from '../../assets/images/delete.png'
 import addFriendIcon from '../../assets/images/add-friend.png'
+import avatar from '../../assets/images/avatar.png'
 import { db } from '../../firebase/firebase'
 import { AuthContext } from '../../context/AuthContext/authContext'
 import {
@@ -178,8 +179,8 @@ const PostCard: React.FC<PostCardProps> = ({
           <Avatar
             size='md'
             variant='circular'
-            src={userImg || 'https://docs.material-tailwind.com/img/face-2.jpg'}
-            alt='profile image'
+            src={userImg || avatar}
+            alt='User profile image'
             className='mb-4'
             {...({} as React.ComponentProps<typeof Avatar>)}
           />

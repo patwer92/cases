@@ -18,6 +18,7 @@ import {
 } from '../../context/PostContext/postReducer'
 import { CommentType } from '../../types/types' // Importer CommentType for riktig typing
 import Comment from './Comment'
+import avatar from '../../assets/images/avatar.png'
 
 // Props for CommentSection - inkluderer postId som en prop
 interface CommentSectionProps {
@@ -88,10 +89,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           <Avatar
             variant='circular'
             size='sm'
-            src={
-              user?.photoURL ||
-              'https://docs.material-tailwind.com/img/face-2.jpg'
-            }
+            src={user?.photoURL || avatar}
             {...({} as React.ComponentProps<typeof Avatar>)}
           />
         </div>

@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { Tooltip, Avatar } from '@material-tailwind/react'
 import { AuthContext } from '../../context/AuthContext/authContext'
+import avatar from '../../assets/images/avatar.png'
 
 const UserLinks: React.FC = (): React.ReactElement => {
   const authContext = useContext(AuthContext)
@@ -68,16 +69,13 @@ const UserLinks: React.FC = (): React.ReactElement => {
           placement='bottom'
         >
           <Avatar
-            src={
-              user?.photoURL ||
-              'https://docs.material-tailwind.com/img/face-2.jpg'
-            }
+            src={user?.photoURL || avatar}
             alt='avatar'
             size='sm'
             {...({} as React.ComponentProps<typeof Avatar>)}
           />
         </Tooltip>
-        <p className='ml-4 font-roboto text-sm text-black font-medium no-underline'>
+        <p className='ml-2 font-roboto text-sm text-black font-medium no-underline'>
           {user?.displayName === null && userData?.name !== undefined
             ? userData?.name?.charAt(0).toUpperCase() + userData?.name?.slice(1)
             : userData?.name}
