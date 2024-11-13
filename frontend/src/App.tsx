@@ -1,7 +1,7 @@
 import React from 'react'
 import Pages from './pages/Pages'
 import { BrowserRouter } from 'react-router-dom'
-import AppContextProvider from './context/AppContext'
+import AppContextProvider from './context/AppContextProvider'
 
 const App: React.FC = (): React.ReactElement => {
   return (

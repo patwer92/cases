@@ -8,12 +8,12 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyBHj2pbUL9-lmb3U-LavANpPwUXi35dgZI',
-  authDomain: 'nyhetsfeed-b758c.firebaseapp.com',
-  projectId: 'nyhetsfeed-b758c',
-  storageBucket: 'nyhetsfeed-b758c.firebasestorage.app',
-  messagingSenderId: '101186226165',
-  appId: '1:101186226165:web:a3dfe1ce2a62098c30c2bc',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
 // Initialize Firebase

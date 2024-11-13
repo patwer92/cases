@@ -14,6 +14,7 @@ import * as Yup from 'yup'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { AuthContext } from '../context/AuthContext/authContext'
 
+// Definerer formverdier
 interface FormValues {
   email: string
   password: string
@@ -22,13 +23,15 @@ interface FormValues {
 const Login: React.FC = (): React.ReactElement => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
   const authContext = useContext(AuthContext)
+
   if (!authContext) {
-    throw new Error('AuthContext must be used within an AuthContextProvider')
+    throw new Error('AuthContext må brukes innenfor en AuthContextProvider')
   }
+
   const { signInWithGoogle, loginWithEmailAndPassword, user } = authContext
 
+  // Valideringsskjema for e-post og passord
   const validationSchema = Yup.object({
     email: Yup.string()
       .email('Ugyldig e-postadresse')
@@ -42,30 +45,25 @@ const Login: React.FC = (): React.ReactElement => {
       ),
   })
 
-  const handleLoginSubmit = (values: { email: string; password: string }) => {
-    // const { email, password } = formik.values
-    if (formik.isValid === true) {
+  // Håndterer innlogging
+  const handleLoginSubmit = (values: FormValues) => {
+    if (formik.isValid) {
       loginWithEmailAndPassword(values.email, values.password)
       setLoading(true)
     } else {
       setLoading(false)
-      alert('Check your input fields')
+      alert('Vennligst sjekk inndataene dine')
     }
-    console.log('Formik:', formik)
-    console.log('Values:', values)
   }
 
-  const initialValues: FormValues = {
-    email: '',
-    password: '',
-  }
-
+  // Skjemahåndtering med Formik
   const formik = useFormik<FormValues>({
-    initialValues,
+    initialValues: { email: '', password: '' },
     validationSchema,
     onSubmit: handleLoginSubmit,
   })
 
+  // Naviger til hjem-siden hvis brukeren er logget inn
   useEffect(() => {
     if (user) {
       navigate('/')
@@ -76,9 +74,8 @@ const Login: React.FC = (): React.ReactElement => {
 
   return (
     <>
-      {' '}
       {loading ? (
-        <div className='grid grid-cols-1 justify-items-center items-center h-screen'>
+        <div className='grid h-screen place-items-center'>
           <ClipLoader
             color='#2399d3'
             size={150}
@@ -86,7 +83,7 @@ const Login: React.FC = (): React.ReactElement => {
           />
         </div>
       ) : (
-        <div className='grid grid-cols-1 h-screen justify-items-center items-center'>
+        <div className='grid h-screen place-items-center'>
           <Card
             className='w-96 shadow-2xl border-2'
             {...({} as React.ComponentProps<typeof Card>)}
@@ -119,17 +116,16 @@ const Login: React.FC = (): React.ReactElement => {
                     {...formik.getFieldProps('email')}
                     {...({} as React.ComponentProps<typeof Input>)}
                   />
-                  <div className='mt-2 mb-4'>
-                    {formik.touched.email && formik.errors.email && (
-                      <Typography
-                        variant='small'
-                        color='red'
-                        {...({} as React.ComponentProps<typeof Typography>)}
-                      >
-                        {formik.errors.email}
-                      </Typography>
-                    )}
-                  </div>
+                  {formik.touched.email && formik.errors.email && (
+                    <Typography
+                      variant='small'
+                      color='red'
+                      className='mt-2'
+                      {...({} as React.ComponentProps<typeof Typography>)}
+                    >
+                      {formik.errors.email}
+                    </Typography>
+                  )}
                 </div>
                 <div className='mt-2 mb-4'>
                   <Input
@@ -139,17 +135,16 @@ const Login: React.FC = (): React.ReactElement => {
                     {...formik.getFieldProps('password')}
                     {...({} as React.ComponentProps<typeof Input>)}
                   />
-                  <div className='my-2'>
-                    {formik.touched.password && formik.errors.password && (
-                      <Typography
-                        variant='small'
-                        color='red'
-                        {...({} as React.ComponentProps<typeof Typography>)}
-                      >
-                        {formik.errors.password}
-                      </Typography>
-                    )}
-                  </div>
+                  {formik.touched.password && formik.errors.password && (
+                    <Typography
+                      variant='small'
+                      color='red'
+                      className='mt-2'
+                      {...({} as React.ComponentProps<typeof Typography>)}
+                    >
+                      {formik.errors.password}
+                    </Typography>
+                  )}
                 </div>
                 <Button
                   type='submit'
@@ -167,17 +162,17 @@ const Login: React.FC = (): React.ReactElement => {
               {...({} as React.ComponentProps<typeof CardFooter>)}
             >
               <Button
-                className='mb-4'
                 variant='gradient'
                 fullWidth
                 color='blue'
                 onClick={signInWithGoogle}
+                className='mb-4'
                 {...({} as React.ComponentProps<typeof Button>)}
               >
                 Logg på med Google
               </Button>
               <Link to='/reset'>
-                <p className='font-medium font-roboto text-sm text-gray-900 text-center mt-6'>
+                <p className='font-medium text-sm text-center mt-6 text-gray-900'>
                   Tilbakestill passordet
                 </p>
               </Link>

@@ -1,98 +1,81 @@
-import React, { useContext, useEffect, useReducer, useRef } from 'react'
+import React, { useContext, useRef } from 'react'
 import { Avatar } from '@material-tailwind/react'
 import { AuthContext } from '../../context/AuthContext/authContext'
 import {
   collection,
   doc,
-  onSnapshot,
-  orderBy,
-  query,
   serverTimestamp,
   setDoc,
+  Timestamp,
 } from 'firebase/firestore'
 import { db } from '../../firebase/firebase'
-import {
-  postReducer, // Importer postReducer
-  postActions, // Importer postActions for å bruke handlinger
-  postStates, // Initial state
-} from '../../context/PostContext/postReducer'
-import { CommentType } from '../../types/types' // Importer CommentType for riktig typing
 import Comment from './Comment'
 import avatar from '../../assets/images/avatar.png'
 
-// Props for CommentSection - inkluderer postId som en prop
+// Lokale props-definisjoner for komponenten
 interface CommentSectionProps {
   postId: string
+  comments: Array<{
+    id: string
+    comment: string
+    image?: string
+    name: string
+    timestamp: Timestamp | string
+  }>
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({
   postId,
-}): React.ReactElement => {
+  comments,
+}) => {
+  // Henter brukerdata fra AuthContext
   const authContext = useContext(AuthContext)
   if (!authContext) {
-    throw new Error('AuthContext must be used within an AuthContextProvider')
+    throw new Error('AuthContext må brukes innenfor AppContextProvider')
   }
 
   const { user, userData } = authContext
-  const comment = useRef<HTMLInputElement>(null) // Referanse til input-feltet til kommentarer
-  const commentRef = doc(collection(db, 'posts', postId, 'comments')) // Dokumentreferanse til kommentar-samling
-  const [state, dispatch] = useReducer(postReducer, {
-    ...postStates,
-    comments: [] as CommentType[], // Initialiserer kommentarer som en liste av CommentType
-  })
+  const commentInput = useRef<HTMLInputElement>(null)
 
-  /* Funksjon for å legge til en ny kommentar */
+  // Sjekker at `postId` er definert, ellers returneres en feilmelding
+  if (!postId) {
+    return <p>Kunne ikke laste kommentarer: Mangler post-ID.</p>
+  }
+
+  // Oppretter referanse til kommentarer i Firestore
+  const commentRef = doc(collection(db, 'posts', postId, 'comments'))
+
+  // Funksjon for å legge til en ny kommentar
   const addComment = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (comment.current?.value) {
-      // Sjekker om kommentar-feltet har en verdi
+    if (commentInput.current?.value) {
       try {
-        // Setter inn ny kommentar i Firestore
         await setDoc(commentRef, {
           id: commentRef.id,
-          comment: comment.current.value,
+          comment: commentInput.current.value,
           image: user?.photoURL,
-          name:
-            user?.displayName?.split(' ')[0] ||
-            userData?.name?.charAt(0).toUpperCase() + userData?.name?.slice(1),
+          name: user?.displayName || userData?.name,
           timestamp: serverTimestamp(),
         })
-        comment.current.value = '' // Tømmer input-feltet etter innlegg
+        commentInput.current.value = '' // Tilbakestiller input etter vellykket innsending
       } catch (error) {
-        alert(error)
-        console.log(error)
+        alert('En feil oppstod. Vennligst prøv igjen. Feilmelding: ' + error)
       }
     }
   }
 
-  /* useEffect - Snapshot for å hente kommentarer */
-  useEffect(() => {
-    const unsubscribe = onSnapshot(
-      query(
-        collection(db, 'posts', postId, 'comments'), // Referanse til kommentarer
-        orderBy('timestamp', 'desc') // Sorter etter timestamp i synkende rekkefølge
-      ),
-      (snapshot) => {
-        dispatch({
-          type: postActions.ADD_COMMENT, // Bruker handlingen for å legge til kommentarer
-          comments: snapshot.docs.map((item) => item.data() as CommentType), // Typekonverterer til CommentType
-        })
-      }
-    )
-    return () => unsubscribe() // Avslutter snapshot ved unmount
-  }, [postId])
-
   return (
     <div className='flex flex-col bg-white w-full py-2 rounded-b-3xl pb-5'>
-      <div className='flex items-center mb-5'>
-        <div className='mr-2 ml-5 '>
-          <Avatar
-            variant='circular'
-            size='sm'
-            src={user?.photoURL || avatar}
-            {...({} as React.ComponentProps<typeof Avatar>)}
-          />
-        </div>
+      {/* Input-seksjon for nye kommentarer */}
+      <div className='flex items-center mb-2'>
+        <Avatar
+          variant='circular'
+          size='sm'
+          src={user?.photoURL || avatar}
+          alt='Bruker-avatar'
+          className='mr-2 ml-5 my-3'
+          {...({} as React.ComponentProps<typeof Avatar>)}
+        />
         <div className='w-full pr-2'>
           <form
             className='flex items-center w-full'
@@ -102,8 +85,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({
               name='comment'
               type='text'
               placeholder='Skriv en kommentar...'
-              className='w-full rounded-2xl outline-none border-0 px-4 py-2 bg-gray-100/50 mr-3'
-              ref={comment}
+              className='w-full text-sm rounded-2xl outline-none border-0 px-4 py-3 bg-gray-100 mr-3'
+              ref={commentInput}
             />
             <button
               type='submit'
@@ -114,10 +97,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           </form>
         </div>
       </div>
-      {/* Itererer over kommentarer og rendrer Comment-komponenten */}
-      {state.comments?.map((comment: CommentType, index: number) => (
+      {/* Mapper og viser kommentarer */}
+      {comments?.map((comment, index) => (
         <Comment
-          key={index}
+          key={comment.id || index}
           image={comment.image}
           name={comment.name}
           comment={comment.comment}

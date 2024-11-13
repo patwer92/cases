@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { Input, Button, Typography } from '@material-tailwind/react'
 
-const Reset: React.FC = (): React.ReactElement => {
+// Reset-komponent for å tilbakestille passord via e-post
+const Reset: React.FC = () => {
   const [email, setEmail] = useState('')
 
   return (
-    <div className='grid grid-cols-1 justify-items-center items-center h-screen'>
+    <div className='grid h-screen place-items-center'>
       <div className='w-96'>
+        {/* Instruksjonstekst for passordtilbakestilling */}
         <Typography
           variant='h6'
           color='blue-gray'
@@ -16,6 +18,8 @@ const Reset: React.FC = (): React.ReactElement => {
           Vennligst fyll inn e-postadressen knyttet til din konto, så sender vi
           deg en lenke for å tilbakestille passord.
         </Typography>
+
+        {/* Input-felt for e-postadresse */}
         <Input
           label='E-postadresse'
           name='email'
@@ -24,10 +28,12 @@ const Reset: React.FC = (): React.ReactElement => {
           onChange={(e) => setEmail(e.target.value)}
           {...({} as React.ComponentProps<typeof Input>)}
         />
+
+        {/* Send-knapp for å motta tilbakestillingslenke */}
         <Button
           variant='gradient'
-          className='mt-4'
           color='blue'
+          className='mt-4'
           fullWidth
           {...({} as React.ComponentProps<typeof Button>)}
         >

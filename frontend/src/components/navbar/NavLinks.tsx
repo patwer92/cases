@@ -1,7 +1,11 @@
+import React from 'react'
+
+// NavLinks-komponenten viser ikonbaserte lenker i navigasjonen
 const NavLinks: React.FC = (): React.ReactElement => {
   return (
     <div className='flex justify-center items-center cursor-pointer'>
-      <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500'>
+      {/* Hjem-ikon */}
+      <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-purple-900'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
@@ -17,7 +21,9 @@ const NavLinks: React.FC = (): React.ReactElement => {
           />
         </svg>
       </div>
-      <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500'>
+
+      {/* Meldinger-ikon */}
+      <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-purple-900'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
@@ -33,7 +39,9 @@ const NavLinks: React.FC = (): React.ReactElement => {
           />
         </svg>
       </div>
-      <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500'>
+
+      {/* Kube-ikon */}
+      <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-purple-900'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
@@ -49,7 +57,9 @@ const NavLinks: React.FC = (): React.ReactElement => {
           />
         </svg>
       </div>
-      <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-blue-500'>
+
+      {/* Trofé-ikon */}
+      <div className='hover:translate-y-1 duration-500 ease-in-out hover:text-purple-900'>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'

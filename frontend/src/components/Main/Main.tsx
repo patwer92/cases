@@ -1,25 +1,12 @@
-import React, {
-  useRef,
-  useContext,
-  useState,
-  useReducer,
-  useEffect,
-} from 'react'
+import React, { useRef, useContext, useState, useReducer } from 'react'
 import { Avatar, Button, Alert } from '@material-tailwind/react'
-import live from '../../assets/images/live.png'
-import smile from '../../assets/images/smile.png'
-import addImage from '../../assets/images/add-image.png'
-import avatar from '../../assets/images/avatar.png'
 import { AuthContext } from '../../context/AuthContext/authContext'
 import {
-  collection,
-  doc,
-  setDoc,
   serverTimestamp,
+  setDoc,
+  doc,
+  collection,
   Timestamp,
-  query,
-  orderBy,
-  onSnapshot,
 } from 'firebase/firestore'
 import { db } from '../../firebase/firebase'
 import {
@@ -32,98 +19,83 @@ import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
-  UploadTaskSnapshot,
 } from 'firebase/storage'
 import PostCard from './PostCard'
 
-// Typer for fil og bilde
-type FileType = File | null
-type ImageType = string | null
+// Importerer statiske ressurser
+import live from '../../assets/images/live.png'
+import smile from '../../assets/images/smile.png'
+import addImage from '../../assets/images/add-image.png'
+import avatar from '../../assets/images/avatar.png'
 
-// Typer for post
-interface Post {
-  uid: string
-  documentId: string
-  userImg?: string
-  name: string
-  email: string
-  text: string
-  image?: string
-  timestamp: Timestamp | string // Tillater begge typer
-}
+// Importerer typer for fil og bilde
+import { FileType, ImageType, Post } from '../../types/postTypes'
 
+// Hovedkomponenten som håndterer innlegg og visning
 const Main: React.FC = (): React.ReactElement => {
   const authContext = useContext(AuthContext)
   if (!authContext) {
-    throw new Error('AuthContext must be used within an AuthContextProvider')
+    throw new Error('AuthContext må brukes innenfor en AppContextProvider')
   }
   const { user, userData } = authContext
+  const posts = authContext.posts as Post[]
 
-  // State management med reducer og initial state
   const [state, dispatch] = useReducer(postReducer, postStates)
-
-  // Refs for input og rulling
-  const text = useRef<HTMLInputElement>(null)
-  const scrollRef = useRef<HTMLDivElement>(null)
-
-  // State for bilde, fil og progresjonslinje
   const [image, setImage] = useState<ImageType>(null)
   const [file, setFile] = useState<FileType>(null)
   const [progressBar, setProgressBar] = useState<number>(0)
-  const [isNewPost, setIsNewPost] = useState(false) // Ny state for å spore ny post
+  const [warning, setWarning] = useState(false)
 
-  // Firebase referanser
-  const collectionRef = collection(db, 'posts')
+  const text = useRef<HTMLInputElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const postRef = doc(collection(db, 'posts'))
-  const document = postRef.id
-  const { SUBMIT_POST, HANDLE_ERROR } = postActions
 
-  // Håndtering av filopplasting
+  const { HANDLE_ERROR } = postActions
+
+  // Håndterer filopplasting
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]) // Setter fil i state
+      setFile(e.target.files[0])
     }
   }
 
-  // Funksjon for å sende inn post
+  // Sender nytt innlegg til databasen
   const handleSubmitPost = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('handleSubmitPost funksjon kalt') // Bekreft at funksjonen kjører
 
-    if (text.current && text.current.value !== '') {
+    // Validerer om innleggstekst eller bilde finnes
+    if ((text.current && text.current.value !== '') || image) {
       try {
         await setDoc(postRef, {
-          documentId: document,
+          documentId: postRef.id,
           uid: user?.uid || userData?.uid,
           userImg: user?.photoURL,
           name: user?.displayName || userData?.name,
           email: user?.email || userData?.email,
-          text: text.current.value,
-          image: image,
+          text: text.current?.value || '',
+          image: image || null,
           timestamp: serverTimestamp(),
         })
-        console.log('Post lagret til Firestore') // Bekreft at data blir sendt
 
-        setIsNewPost(true) // Sett isNewPost til true etter å ha lagret en ny post
-        if (text.current) {
-          text.current.value = '' // Tøm input-feltet etter innsendelse
-        } else {
-          console.warn('text.current er null, kan ikke sette verdi.')
-        }
+        // Tilbakestiller input-felt og varsler etter vellykket innsending
+        if (text.current) text.current.value = ''
+        setImage(null)
+        setFile(null)
+        setProgressBar(0)
+        setWarning(false)
       } catch (error) {
         dispatch({ type: HANDLE_ERROR })
-        console.log('Error ved lagring av post:', error)
-        alert(error)
+        alert(
+          'Feil ved lagring av post. Vennligst prøv igjen. Feilmelding: ' +
+            error
+        )
       }
     } else {
-      console.log('Tekstfeltet er tomt') // Indiker at tekstfeltet er tomt
-      dispatch({ type: HANDLE_ERROR })
+      setWarning(true)
     }
   }
 
   const storage = getStorage()
-
-  // Metadata for filopplasting
   const metadata = {
     contentType: [
       'image/jpeg',
@@ -134,10 +106,9 @@ const Main: React.FC = (): React.ReactElement => {
     ],
   }
 
-  // Funksjon for å laste opp bilde til Firebase Storage
+  // Laster opp bildet til Firebase Storage og oppdaterer progressbar
   const submitImage = async () => {
-    if (!file) return // Sjekker om fil er valgt
-    if (!metadata.contentType.includes(file.type)) return // Validerer filtype
+    if (!file || !metadata.contentType.includes(file.type)) return
 
     try {
       const storageRef = ref(storage, `images/${file.name}`)
@@ -145,61 +116,29 @@ const Main: React.FC = (): React.ReactElement => {
 
       uploadTask.on(
         'state_changed',
-        (snapshot: UploadTaskSnapshot) => {
-          // Oppdaterer progresjon
+        (snapshot) => {
           const progress = Math.round(
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           )
           setProgressBar(progress)
         },
-        (error) => {
-          alert(error)
-        },
+        (error) => alert(error),
         async () => {
-          // Henter URL etter vellykket opplasting
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
           setImage(downloadURL)
         }
       )
     } catch (error) {
       dispatch({ type: HANDLE_ERROR })
-      alert(error)
+      alert(
+        'Feil ved bildeopplasting. Vennligst prøv igjen. Feilmelding: ' + error
+      )
     }
   }
 
-  useEffect(() => {
-    const postData = async () => {
-      const q = query(collectionRef, orderBy('timestamp', 'asc'))
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const postsData = snapshot.docs.map((item) => ({
-          uid: item.data().uid || '',
-          documentId: item.data().documentId || '',
-          userImg: item.data().userImg || '',
-          name: item.data().name || '',
-          email: item.data().email || '',
-          text: item.data().text || '',
-          image: item.data().image || '',
-          timestamp: item.data().timestamp || '',
-        }))
-
-        dispatch({
-          type: postActions.SUBMIT_POST,
-          posts: postsData,
-        })
-
-        // Kun scroll til ny post hvis isNewPost er true
-        if (isNewPost) {
-          scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
-          setIsNewPost(false) // Tilbakestill isNewPost etter scrolling
-        }
-      })
-      return () => unsubscribe()
-    }
-    postData()
-  }, [collectionRef, SUBMIT_POST, isNewPost])
-
   return (
     <div className='flex flex-col items-center'>
+      {/* Input-seksjon for nytt innlegg */}
       <div className='flex flex-col py-4 w-full bg-white rounded-3xl shadow-lg'>
         <div className='flex items-center border-b-2 border-gray-300 pb-4 pl-4 w-full'>
           <Avatar
@@ -250,10 +189,20 @@ const Main: React.FC = (): React.ReactElement => {
             </div>
           </form>
         </div>
+
+        {/* Advarsel for manglende tekst eller bilde */}
+        {warning && (
+          <Alert color='orange'>
+            Vennligst skriv noe eller last opp et bilde for å poste et innlegg.
+          </Alert>
+        )}
+
         <span
           className='bg-blue-700 py-1 rounded-md'
           style={{ width: `${progressBar}%` }}
         />
+
+        {/* Interaksjonsknapper */}
         <div className='flex justify-around items-center pt-4'>
           <div className='flex item-center'>
             <label
@@ -269,7 +218,6 @@ const Main: React.FC = (): React.ReactElement => {
                 type='file'
                 style={{ display: 'none' }}
                 onChange={handleUpload}
-                className='cursor-pointer'
               />
             </label>
             {file && (
@@ -289,7 +237,7 @@ const Main: React.FC = (): React.ReactElement => {
               src={live}
               alt='live'
             />
-            <p className='font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none'>
+            <p className='font-roboto font-medium text-sm text-gray-700'>
               Gå Live
             </p>
           </div>
@@ -299,51 +247,53 @@ const Main: React.FC = (): React.ReactElement => {
               src={smile}
               alt='feeling'
             />
-            <p className='font-roboto font-medium text-sm text-gray-700 no-underline tracking-normal leading-none'>
+            <p className='font-roboto font-medium text-sm text-gray-700'>
               Følelse
             </p>
           </div>
         </div>
+
+        <div ref={scrollRef}></div>
       </div>
+
+      {/* Viser innleggene i feeden */}
       <div className='flex flex-col py-4 w-full'>
         {state.error ? (
-          <div className='flex justify-center items-center'>
-            <Alert color='red'>
-              Noe gikk galt. Vennligst prøv igjen på nytt...
-            </Alert>
-          </div>
+          <Alert color='red'>
+            Noe gikk galt. Vennligst last opp siden på nytt...
+          </Alert>
         ) : (
-          <div>
-            {state.posts.length > 0 &&
-              state.posts.map((post: Post, index: number) => {
-                let postTimestamp: string
-
-                // Typebeskyttelse for å sjekke om post.timestamp er et Firestore Timestamp-objekt
-                if (post.timestamp instanceof Timestamp) {
-                  postTimestamp = post.timestamp.toDate().toUTCString() // Konverterer Firestore Timestamp til UTC-streng
-                } else {
-                  postTimestamp = new Date(post.timestamp).toUTCString() // Konverterer string til Date og formaterer
-                }
-
-                return (
+          <div className='main-content'>
+            {posts.length > 0 ? (
+              // Sorter innleggene etter `timestamp` før vi mapper over dem
+              posts
+                .slice() // Opprett en kopi for å unngå mutasjoner
+                .sort((a, b) => {
+                  // Sjekk om `timestamp` er en `Timestamp`, ellers konverter den til en Date
+                  const aDate =
+                    a.timestamp instanceof Timestamp
+                      ? a.timestamp.toDate()
+                      : new Date(a.timestamp)
+                  const bDate =
+                    b.timestamp instanceof Timestamp
+                      ? b.timestamp.toDate()
+                      : new Date(b.timestamp)
+                  return bDate.getTime() - aDate.getTime() // Sorter fra nyeste til eldste
+                })
+                .map((postItem) => (
                   <PostCard
-                    key={index}
-                    {...({} as React.ComponentProps<typeof PostCard>)}
-                    userImg={post.userImg || avatar}
-                    id={post.documentId}
-                    uid={post.uid}
-                    name={post.name}
-                    email={post.email}
-                    image={post.image}
-                    text={post.text}
-                    timestamp={postTimestamp}
+                    key={postItem.documentId}
+                    post={{ ...postItem, id: postItem.documentId }}
                   />
-                )
-              })}
+                ))
+            ) : (
+              <p className='font-roboto grid grid-col-1 justify-center '>
+                Laster innlegg...
+              </p>
+            )}
           </div>
         )}
       </div>
-      <div ref={scrollRef}>{/*Referanse for scroll*/}</div>
     </div>
   )
 }

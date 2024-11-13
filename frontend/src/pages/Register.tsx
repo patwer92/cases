@@ -14,24 +14,25 @@ import * as Yup from 'yup'
 import ClipLoader from 'react-spinners/ClipLoader'
 import { AuthContext } from '../context/AuthContext/authContext'
 
+// Definerer initialverdier for registreringsskjemaet
 interface FormValues {
   name: string
   email: string
   password: string
 }
 
-const Register: React.FC = (): React.ReactElement => {
+const Register: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  // Henter registerfunksjon og brukerdata fra AuthContext
   const authContext = useContext(AuthContext)
   if (!authContext) {
     throw new Error('AuthContext must be used within an AuthContextProvider')
   }
   const { registerWithEmailAndPassword, user } = authContext
 
-  const initialValues = { name: '', email: '', password: '' }
-
+  // Valideringsskjema med Yup
   const validationSchema = Yup.object({
     name: Yup.string()
       .required('Vennligst fyll ut ditt navn')
@@ -49,39 +50,33 @@ const Register: React.FC = (): React.ReactElement => {
       ),
   })
 
-  const handleRegisterSubmit = (values: {
-    name: string
-    email: string
-    password: string
-  }) => {
-    if (formik.isValid === true) {
+  // Funksjon for registrering
+  const handleRegisterSubmit = (values: FormValues) => {
+    if (formik.isValid) {
       registerWithEmailAndPassword(values.name, values.email, values.password)
       setLoading(true)
     } else {
       setLoading(false)
       alert('Check your input fields')
     }
-    console.log('Formik:', formik)
-    console.log('Values:', values)
   }
 
   const formik = useFormik<FormValues>({
-    initialValues,
+    initialValues: { name: '', email: '', password: '' },
     validationSchema,
     onSubmit: handleRegisterSubmit,
   })
 
+  // Naviger til hjem ved vellykket registrering
   useEffect(() => {
-    if (user) {
-      navigate('/')
-    } else {
-      setLoading(false)
-    }
+    if (user) navigate('/')
+    else setLoading(false)
   }, [user, navigate])
+
   return (
     <>
       {loading ? (
-        <div className='grid grid-cols-1 justify-items-center items-center h-screen'>
+        <div className='grid h-screen place-items-center'>
           <ClipLoader
             color='#2399d3'
             size={150}
@@ -89,7 +84,7 @@ const Register: React.FC = (): React.ReactElement => {
           />
         </div>
       ) : (
-        <div className='grid grid-cols-1 justify-items-center items-center h-screen'>
+        <div className='grid h-screen place-items-center'>
           <Card
             className='w-96'
             {...({} as React.ComponentProps<typeof Card>)}
@@ -101,7 +96,7 @@ const Register: React.FC = (): React.ReactElement => {
               {...({} as React.ComponentProps<typeof CardHeader>)}
             >
               <Typography
-                className='text-center text-2xl px-2'
+                className='text-2xl'
                 variant='h3'
                 color='white'
                 {...({} as React.ComponentProps<typeof Typography>)}
@@ -114,71 +109,65 @@ const Register: React.FC = (): React.ReactElement => {
               {...({} as React.ComponentProps<typeof CardBody>)}
             >
               <form onSubmit={formik.handleSubmit}>
-                <div className='mb-2'>
-                  <Input
-                    type='text'
-                    label='Navn'
-                    size='lg'
-                    {...formik.getFieldProps('name')}
-                    {...({} as React.ComponentProps<typeof Input>)}
-                  />
-                  <div className='mt-2 mb-4'>
-                    {formik.touched.name && formik.errors.name && (
-                      <Typography
-                        variant='small'
-                        color='red'
-                        {...({} as React.ComponentProps<typeof Typography>)}
-                      >
-                        {formik.errors.name}
-                      </Typography>
-                    )}
-                  </div>
-                </div>
-                <div className='mt-4 mb-2'>
-                  <Input
-                    type='email'
-                    label='E-postadresse'
-                    size='lg'
-                    {...formik.getFieldProps('email')}
-                    {...({} as React.ComponentProps<typeof Input>)}
-                  />
-                  <div className='mt-2 mb-4'>
-                    {formik.touched.email && formik.errors.email && (
-                      <Typography
-                        variant='small'
-                        color='red'
-                        {...({} as React.ComponentProps<typeof Typography>)}
-                      >
-                        {formik.errors.email}
-                      </Typography>
-                    )}
-                  </div>
-                </div>
-                <div className='mt-4 mb-2'>
-                  <Input
-                    type='password'
-                    label='Passord'
-                    size='lg'
-                    {...formik.getFieldProps('password')}
-                    {...({} as React.ComponentProps<typeof Input>)}
-                  />
-                  <div className='mt-2 mb-4'>
-                    {formik.touched.password && formik.errors.password && (
-                      <Typography
-                        variant='small'
-                        color='red'
-                        {...({} as React.ComponentProps<typeof Typography>)}
-                      >
-                        {formik.errors.password}
-                      </Typography>
-                    )}
-                  </div>
-                </div>
+                <Input
+                  type='text'
+                  label='Navn'
+                  size='lg'
+                  {...formik.getFieldProps('name')}
+                  {...({} as React.ComponentProps<typeof Input>)}
+                />
+                {formik.touched.name && formik.errors.name && (
+                  <Typography
+                    variant='small'
+                    color='red'
+                    className='mt-2'
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    {formik.errors.name}
+                  </Typography>
+                )}
+                <Input
+                  type='email'
+                  label='E-postadresse'
+                  size='lg'
+                  {...formik.getFieldProps('email')}
+                  className='mt-4'
+                  {...({} as React.ComponentProps<typeof Input>)}
+                />
+                {formik.touched.email && formik.errors.email && (
+                  <Typography
+                    variant='small'
+                    color='red'
+                    className='mt-2'
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    {formik.errors.email}
+                  </Typography>
+                )}
+                <Input
+                  type='password'
+                  label='Passord'
+                  size='lg'
+                  {...formik.getFieldProps('password')}
+                  className='mt-4'
+                  {...({} as React.ComponentProps<typeof Input>)}
+                />
+                {formik.touched.password && formik.errors.password && (
+                  <Typography
+                    variant='small'
+                    color='red'
+                    className='mt-2'
+                    {...({} as React.ComponentProps<typeof Typography>)}
+                  >
+                    {formik.errors.password}
+                  </Typography>
+                )}
                 <Button
                   variant='gradient'
                   color='blue'
                   type='submit'
                   fullWidth
+                  className='mt-6'
                   {...({} as React.ComponentProps<typeof Button>)}
                 >
                   Registrer
@@ -191,15 +180,13 @@ const Register: React.FC = (): React.ReactElement => {
             >
               <Typography
                 variant='small'
-                className='mt-2 flex justify-center'
+                className='mt-2 text-center'
                 {...({} as React.ComponentProps<typeof Typography>)}
               >
                 Har du allerede en konto?
                 <Link to='/login'>
                   <Typography
                     as='span'
-                    href='#signup'
-                    variant='small'
                     color='blue-gray'
                     className='ml-1 font-bold'
                     {...({} as React.ComponentProps<typeof Typography>)}

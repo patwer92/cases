@@ -1,7 +1,7 @@
-import { Timestamp } from 'firebase/firestore' // Importer hvis ikke gjort tidligere
-import { Like, CommentType } from '../../types/types' // Importer Like og CommentType
+import { Timestamp } from 'firebase/firestore'
+import { Like, CommentType } from '../../types/types'
 
-// Definer typen for Post
+// Definerer typen for et innlegg
 interface Post {
   uid: string
   documentId: string
@@ -10,71 +10,66 @@ interface Post {
   email: string
   text: string
   image?: string
-  timestamp: Timestamp | string // Tillater begge typer
+  timestamp: Timestamp | string // Aksepterer både Timestamp- og string-typer
 }
 
-// Definer postActions
+// Handlingstyper for oppdatering av posts, likes, og kommentarer
 export const postActions = {
   SUBMIT_POST: 'SUBMIT_POST',
   HANDLE_ERROR: 'HANDLE_ERROR',
   ADD_LIKE: 'ADD_LIKE',
   ADD_COMMENT: 'ADD_COMMENT',
-} as const // Bruk 'as const' for å sikre readonly literals
+} as const
 
-// Initial state med riktig type
+// Initialtilstand for postReducer
 export const postStates = {
   error: false,
-  posts: [] as Post[],
-  likes: [] as Like[], // Liste over Like-objekter
-  comments: [] as CommentType[], // Kommentarer som liste av CommentType
+  posts: [] as Post[], // Liste over innlegg
+  likes: [] as Like[], // Liste over likes
+  comments: [] as CommentType[], // Liste over kommentarer
 }
 
-// Definerte typer for handlinger
+// Definerer typer for handlinger som postReducer kan håndtere
 type ActionType =
   | { type: typeof postActions.SUBMIT_POST; posts: Post[] }
   | { type: typeof postActions.ADD_LIKE; likes: Like[] }
-  | { type: typeof postActions.ADD_COMMENT; comments: CommentType[] } // Bruker CommentType
+  | { type: typeof postActions.ADD_COMMENT; comments: CommentType[] }
   | { type: typeof postActions.HANDLE_ERROR }
 
-// Reducer-funksjon med spesifikke typer
+// Reducer-funksjon som oppdaterer state basert på handling
 export const postReducer = (
   state: typeof postStates,
   action: ActionType
 ): typeof postStates => {
   switch (action.type) {
-    // Handling for innsendelse av post
     case postActions.SUBMIT_POST:
       return {
         ...state,
         error: false,
-        posts: action.posts || [], // Oppdaterer posts i state
+        posts: action.posts || [], // Oppdaterer liste over innlegg
       }
 
-    // Handling for å legge til en like
     case postActions.ADD_LIKE:
       return {
         ...state,
         error: false,
-        likes: action.likes || [], // Oppdaterer likes i state
+        likes: action.likes || [], // Oppdaterer liste over likes
       }
 
-    // Handling for å legge til en kommentar
     case postActions.ADD_COMMENT:
       return {
         ...state,
         error: false,
-        comments: action.comments || [], // Oppdaterer kommentarer i state
+        comments: action.comments || [], // Oppdaterer liste over kommentarer
       }
 
-    // Handling for feil
     case postActions.HANDLE_ERROR:
       return {
         ...state,
-        error: true, // Setter error til true
-        posts: [], // Tømmer posts ved feil
+        error: true, // Setter feilmelding til true
+        posts: [], // Tømmer innlegg ved feil
       }
 
-    // Default-tilfelle som returnerer gjeldende state
     default:
       return state
   }

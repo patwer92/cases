@@ -1,14 +1,9 @@
 import React from 'react'
 import { Avatar } from '@material-tailwind/react'
 import avatar from '../../assets/images/avatar.png'
+import { CommentProps } from '../../types/commentTypes' // Importerer type for kommentarer
 
-// Props for Comment-komponenten
-interface CommentProps {
-  name: string
-  comment: string
-  image?: string
-}
-
+// Kommentar-komponent som viser en enkel kommentar med navn, bilde og tekst
 const Comment: React.FC<CommentProps> = ({
   name,
   comment,
@@ -25,11 +20,11 @@ const Comment: React.FC<CommentProps> = ({
           {...({} as React.ComponentProps<typeof Avatar>)}
         />
       </div>
-      <div className='flex flex-col items-start bg-blue-100/25 rounded-2xl py-1 px-2 w-full mr-5'>
-        <p className='font-roboto text-black/90 text-sm no-underline tracking-normal leading-none px-2 pt-3 font-bold'>
+      <div className='flex flex-col items-start bg-purple-100/25 rounded-2xl py-1 px-2 w-full mr-5'>
+        <p className='font-roboto text-black/90 text-sm font-bold px-2 pt-3'>
           {name}
         </p>
-        <p className='font-roboto text-gray-900 text-sm no-underline tracking-normal leading-none px-2 pb-3 pt-3 font-medium'>
+        <p className='font-roboto text-gray-900 text-sm font-medium px-2 pb-3 pt-3'>
           {comment}
         </p>
       </div>
