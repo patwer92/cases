@@ -66,20 +66,23 @@ const AppContextProvider: React.FC<{ children: ReactNode }> = ({
   const [posts, setPosts] = useState<Post[]>([])
   const navigate = useNavigate()
 
-  // Laster innlegg med tilhørende likes og kommentarer
+  // Laster innlegg med tilhørende likes og kommentarer når bruker er autentisert
   useEffect(() => {
+    if (!user) return // Lytter bare når bruker er autentisert
+
     const postsCollectionRef = collection(db, 'posts')
     const unsubscribePosts = onSnapshot(postsCollectionRef, (snapshot) => {
       const updatedPosts = snapshot.docs.map((doc) => {
         const postData = doc.data() as Post
 
-        // Abonnerer på likes og kommentarer for hvert innlegg
+        // Abonnerer på likes for hvert innlegg
         onSnapshot(
           collection(db, 'posts', doc.id, 'likes'),
           (likesSnapshot) => {
             const likes = likesSnapshot.docs.map((likeDoc) => ({
               uid: likeDoc.data().uid,
             }))
+            // Oppdaterer `posts`-state med de nyeste likes for riktig post
             setPosts((prevPosts) =>
               prevPosts.map((prevPost) =>
                 prevPost.documentId === doc.id
@@ -113,7 +116,7 @@ const AppContextProvider: React.FC<{ children: ReactNode }> = ({
                   b.timestamp instanceof Timestamp
                     ? b.timestamp.toDate()
                     : new Date(b.timestamp)
-                return dateB.getTime() - dateA.getTime()
+                return dateB.getTime() - dateA.getTime() // Sorter fra nyeste til eldste
               })
 
             // Oppdaterer `posts`-state med de nyeste, sorterte kommentarene for riktig post
@@ -132,13 +135,15 @@ const AppContextProvider: React.FC<{ children: ReactNode }> = ({
       setPosts(updatedPosts)
     })
 
+    // Rydder opp i lytteren ved av-mount eller endring av bruker
     return () => unsubscribePosts()
-  }, [])
+  }, [user])
 
   // Håndterer autentisering og brukerdata
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged(async (currentUser) => {
       setUser(currentUser)
+      console.log('User:', currentUser) // Logger brukerdata når bruker autentiseres
       if (currentUser) {
         const userQuery = query(
           collection(db, 'users'),

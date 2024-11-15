@@ -8,18 +8,13 @@ import {
   collection,
   Timestamp,
 } from 'firebase/firestore'
-import { db } from '../../firebase/firebase'
+import { db, storage } from '../../firebase/firebase' // Oppdatert: Importerer `storage` fra Firebase-konfigurasjon
 import {
   postReducer,
   postActions,
   postStates,
 } from '../../context/PostContext/postReducer'
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from 'firebase/storage'
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import PostCard from './PostCard'
 
 // Importerer statiske ressurser
@@ -38,6 +33,7 @@ const Main: React.FC = (): React.ReactElement => {
     throw new Error('AuthContext må brukes innenfor en AppContextProvider')
   }
   const { user, userData } = authContext
+  console.log('User:', user) // Logger brukerinfo i Main-komponenten
   const posts = authContext.posts as Post[]
 
   const [state, dispatch] = useReducer(postReducer, postStates)
@@ -95,44 +91,67 @@ const Main: React.FC = (): React.ReactElement => {
     }
   }
 
-  const storage = getStorage()
-  const metadata = {
-    contentType: [
+  // Laster opp bildet til Firebase Storage og oppdaterer progressbar
+  const submitImage = async () => {
+    // Sjekk om filen er tilgjengelig og om typen matcher en gyldig innholdstype
+    const allowedContentTypes = [
       'image/jpeg',
       'image/jpg',
       'image/png',
       'image/gif',
       'image/svg+xml',
-    ],
-  }
+    ] // Endring: Flyttet listen over gyldige filtyper til en egen variabel for klarhet.
 
-  // Laster opp bildet til Firebase Storage og oppdaterer progressbar
-  const submitImage = async () => {
-    if (!file || !metadata.contentType.includes(file.type)) return
+    if (!file || !allowedContentTypes.includes(file.type)) {
+      alert('Ugyldig filtype. Vennligst last opp et gyldig bilde.')
+      return
+    }
+
+    // Endring: Normaliserer filnavnet for å håndtere spesialtegn eller mellomrom
+    const normalizedFileName = file.name.replace(/\s+/g, '_')
+    console.log('Normalized file name:', normalizedFileName) // Logger filnavnet etter normalisering.
 
     try {
-      const storageRef = ref(storage, `images/${file.name}`)
+      // Endring: Bruker normalisert filnavn i stien til Firebase Storage
+      const storageRef = ref(storage, `images/${normalizedFileName}`)
+      console.log('Uploading to:', storageRef.fullPath) // Logger full sti til lagringsreferansen.
+
       const uploadTask = uploadBytesResumable(storageRef, file)
 
       uploadTask.on(
         'state_changed',
         (snapshot) => {
+          // Oppdaterer progresjonen til progressbaren basert på bytes overført
           const progress = Math.round(
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           )
-          setProgressBar(progress)
+          console.log('Upload progress:', progress) // Logger progresjon under opplastingen.
+          setProgressBar(progress) // Oppdaterer progressBar state
         },
-        (error) => alert(error),
+        (error) => {
+          // Feilhåndtering for opplasting
+          console.error('Feil ved opplasting:', error) // Endring: Mer detaljert logging av feil.
+          alert('En feil oppstod under opplastingen. Vennligst prøv igjen.')
+        },
         async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
-          setImage(downloadURL)
+          try {
+            // Henter nedlastnings-URL for det opplastede bildet når opplastingen er fullført
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
+            console.log('Download URL:', downloadURL) // Logger URL til det opplastede bildet.
+            setImage(downloadURL) // Setter bildet til nedlastnings-URL
+            setProgressBar(0) // Tilbakestiller progressBar etter fullført opplasting
+            alert('Bilde opplastet med suksess!')
+          } catch (error) {
+            console.error('Feil ved henting av nedlastings-URL:', error) // Endring: Mer detaljert logging av feil ved henting av URL.
+            alert(
+              'En feil oppstod ved henting av bildet. Vennligst prøv igjen.'
+            )
+          }
         }
       )
     } catch (error) {
-      dispatch({ type: HANDLE_ERROR })
-      alert(
-        'Feil ved bildeopplasting. Vennligst prøv igjen. Feilmelding: ' + error
-      )
+      console.error('Generell feil ved opplasting:', error) // Endring: Generell feilhåndtering.
+      alert('En feil oppstod under opplastingen. Vennligst prøv igjen.')
     }
   }
 
