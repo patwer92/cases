@@ -11,7 +11,7 @@ const Navbar: React.FC = (): React.ReactElement => {
       <Link to='/'>
         <div className='text-2xl font-extrabold text-gray-900 dark:text-white font-roboto'>
           <span className='bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-800'>
-            Nyhetsfeed
+            Sosiale Medier
           </span>{' '}
           App
         </div>
